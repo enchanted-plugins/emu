@@ -1,0 +1,27 @@
+{
+  "description": "Allay token-saver: compresses verbose bash output, blocks duplicate file reads",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use/compress-bash.sh\"",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use/block-duplicates.sh\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
