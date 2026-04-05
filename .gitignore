@@ -1,0 +1,22 @@
+# Allay state files (per-plugin session data)
+plugins/*/state/metrics.jsonl
+plugins/*/state/memory.jsonl
+plugins/*/state/checkpoint.md
+plugins/*/state/checkpoint.md.tmp
+plugins/*/state/remember.md
+
+# Lock directories
+*.lock/
+
+# Temp files
+*.tmp
+
+# Secrets
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Tmp session caches
+/tmp/allay-*
