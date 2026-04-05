@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+# Allay shared metrics — JSONL append with atomic mkdir locks + 10MB rotation
+
+# Source constants if not already loaded
+if [[ -z "${ALLAY_LOCK_SUFFIX:-}" ]]; then
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  # shellcheck source=constants.sh
+  source "${SCRIPT_DIR}/constants.sh"
+fi
+
+acquire_lock() {
+  local lock_dir="$1"
+  local retries=50
+  while ! mkdir "${lock_dir}" 2>/dev/null; do
+    ((retries--))
+    [[ $retries -le 0 ]] && return 1
+    sleep 0.1
+  done
+  return 0
+}
+
+release_lock() {
+  rmdir "$1" 2>/dev/null || true
+}
+
+log_metric() {
+  local file="${1:-state/metrics.jsonl}"
+  local payload="$2"
+  local lock_dir="${file}${ALLAY_LOCK_SUFFIX:-'.lock'}"
+  local max_size="${ALLAY_MAX_METRICS_BYTES:-10485760}"
+
+  # Validate JSON before writing (spec rule #8)
+  if ! printf "%s" "$payload" | jq empty >/dev/null 2>&1; then
+    return 0
+  fi
+
+  # Acquire lock (spec rule #1 — atomic mkdir, never flock)
+  local retries=50
+  while ! mkdir "$lock_dir" 2>/dev/null; do
+    ((retries--))
+    [[ $retries -le 0 ]] && return 0
+    sleep 0.1
+  done
+
+  # Rotate at 10MB (spec rule #10)
+  if [[ -f "$file" ]]; then
+    local size
+    size=$(wc -c < "$file" | tr -d ' ')
+    if [[ "$size" -gt "$max_size" ]]; then
+      tail -n 1000 "$file" > "${file}.tmp"
+      mv "${file}.tmp" "$file"
+    fi
+  fi
+
+  mkdir -p "$(dirname "$file")"
+  printf "%s\n" "$payload" >> "$file"
+  rmdir "$lock_dir" 2>/dev/null || true
+  return 0
+}
