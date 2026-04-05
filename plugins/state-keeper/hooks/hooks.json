@@ -1,0 +1,16 @@
+{
+  "description": "Allay state-keeper: saves checkpoint before context compaction",
+  "hooks": {
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-compact/save-checkpoint.sh\"",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}
