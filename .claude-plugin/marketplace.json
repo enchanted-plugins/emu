@@ -1,0 +1,30 @@
+{
+  "name": "allay",
+  "owner": {
+    "name": "Allay"
+  },
+  "metadata": {
+    "description": "Every token accounted for. Context health toolkit for Claude Code.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "allay-state-keeper",
+      "source": "./plugins/state-keeper",
+      "description": "Preserves Claude Code context across compactions. Writes checkpoint before compaction wipes context.",
+      "category": "development"
+    },
+    {
+      "name": "allay-token-saver",
+      "source": "./plugins/token-saver",
+      "description": "Reduces token usage by compressing verbose tool outputs and blocking duplicate file reads.",
+      "category": "development"
+    },
+    {
+      "name": "allay-context-guard",
+      "source": "./plugins/context-guard",
+      "description": "The eyes of Allay. Detects when Claude is spinning in circles (Drift Alert), forecasts turns until compaction (Runway), and proves exact savings (/allay:report).",
+      "category": "development"
+    }
+  ]
+}

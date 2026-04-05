@@ -1,0 +1,17 @@
+{
+  "description": "Allay context-guard: drift detection after every tool call",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash|Read|Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/post-tool-use/detect-drift.sh\"",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "allay-state-keeper",
+  "description": "Preserves Claude Code context across compactions. Writes checkpoint before compaction wipes context.",
+  "version": "1.0.0",
+  "author": { "name": "Allay" },
+  "license": "MIT",
+  "keywords": ["compaction", "state", "checkpoint", "context"],
+  "commands": [
+    "./commands/checkpoint.md",
+    "./commands/checkpoint-show.md"
+  ],
+  "skills": ["./skills/state-recovery/"]
+}
