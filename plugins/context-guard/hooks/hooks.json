@@ -1,9 +1,9 @@
 {
-  "description": "Allay context-guard: drift detection after every tool call",
+  "description": "Allay context-guard: drift detection and token estimation after every tool call",
   "hooks": {
     "PostToolUse": [
       {
-        "matcher": "Bash|Read|Write|Edit|MultiEdit",
+        "matcher": "Bash|Read|Write|Edit|MultiEdit|Glob|Grep",
         "hooks": [
           {
             "type": "command",

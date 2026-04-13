@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # context-guard: PostToolUse hook
 # Detects drift patterns: read loops, edit-revert cycles, test fail loops.
+# Estimates token usage per tool call for runway/analytics.
 # Fires on EVERY tool call — must be fast.
 # MUST exit 0 always (spec rule #6).
 
@@ -32,6 +33,7 @@ fi
 HOOK_TRANSCRIPT_PATH=$(printf "%s" "$HOOK_INPUT" | jq -r '.transcript_path // empty' 2>/dev/null)
 TOOL_NAME=$(printf "%s" "$HOOK_INPUT" | jq -r '.tool_name // empty' 2>/dev/null)
 TOOL_INPUT=$(printf "%s" "$HOOK_INPUT" | jq -c '.tool_input // {}' 2>/dev/null)
+TOOL_RESULT=$(printf "%s" "$HOOK_INPUT" | jq -c '.tool_result // {}' 2>/dev/null)
 
 if [[ -z "$TOOL_NAME" ]]; then
   exit 0
@@ -56,8 +58,8 @@ CMD_BASE=""
 EXIT_CODE=""
 
 case "$TOOL_NAME" in
-  Read)
-    FILE_PATH=$(printf "%s" "$TOOL_INPUT" | jq -r '.file_path // empty' 2>/dev/null)
+  Read|Glob|Grep)
+    FILE_PATH=$(printf "%s" "$TOOL_INPUT" | jq -r '.file_path // .path // .pattern // empty' 2>/dev/null)
     # Sanitize path (spec rule #9)
     if [[ -n "$FILE_PATH" ]]; then
       DECODED=$(printf "%s" "$FILE_PATH" | sed -e 's/%2[eE]/./g' -e 's/%2[fF]/\//g' -e 's/%25/%/g')
@@ -89,7 +91,7 @@ case "$TOOL_NAME" in
     fi
     ;;
   *)
-    exit 0
+    # Still log token estimation for unknown tools, but no drift detection
     ;;
 esac
 
@@ -111,6 +113,25 @@ CACHE_ENTRY=$(jq -cn \
 
 printf "%s\n" "$CACHE_ENTRY" >> "$CACHE_FILE"
 
+# ── Token estimation (runway data fix) ──
+# Estimate tokens from tool_input + tool_result byte sizes
+# ~1.3 tokens per word, ~4 chars per word ≈ 0.325 tokens per char
+INPUT_BYTES=${#TOOL_INPUT}
+RESULT_BYTES=${#TOOL_RESULT}
+EST_TOKENS=$(( (INPUT_BYTES + RESULT_BYTES) * 13 / 40 ))
+# Minimum 50 tokens per call (overhead)
+[[ "$EST_TOKENS" -lt 50 ]] && EST_TOKENS=50
+
+TURN_METRIC=$(jq -cn \
+  --arg event "turn" \
+  --arg ts "$TIMESTAMP" \
+  --arg tool "$TOOL_NAME" \
+  --argjson tokens_est "$EST_TOKENS" \
+  --argjson turn "$TURN" \
+  '{event:$event, ts:$ts, tool:$tool, tokens_est:$tokens_est, turn:$turn}')
+
+log_metric "${STATE_DIR}/metrics.jsonl" "$TURN_METRIC"
+
 # ── Cooldown check: max 1 alert per N turns ──
 LAST_ALERT_TURN=0
 if [[ -f "$COOLDOWN_FILE" ]]; then
@@ -128,12 +149,12 @@ ALERT_MSG=""
 DRIFT_PATTERN=""
 
 case "$TOOL_NAME" in
-  Read)
+  Read|Glob|Grep)
     # ── Pattern 1: Read Loop ──
-    # Same file read N+ times without a Write that changes its hash
+    # Same file/pattern accessed N+ times without a Write that changes its hash
     if [[ -n "$FILE_PATH" ]]; then
       # Count reads of this file (grep -F for fixed-string, wc -l for count)
-      READ_COUNT=$(grep -F "\"tool\":\"Read\"" "$CACHE_FILE" 2>/dev/null \
+      READ_COUNT=$(grep -F "\"tool\":\"${TOOL_NAME}\"" "$CACHE_FILE" 2>/dev/null \
         | grep -F "\"$FILE_PATH\"" 2>/dev/null \
         | wc -l | tr -d '[:space:]')
       READ_COUNT=${READ_COUNT:-0}
@@ -179,24 +200,23 @@ case "$TOOL_NAME" in
     # ── Pattern 3: Test Fail Loop ──
     # Same base command fails N+ times consecutively
     if [[ -n "$EXIT_CODE" ]] && [[ "$EXIT_CODE" != "0" ]] && [[ -n "$CMD_BASE" ]]; then
-      # Count consecutive failures of same cmd_base from end of cache
-      # Use tail + reverse approach (portable, no tac dependency)
+      # Bug fix: process bounded tail with single jq -s call instead of per-line jq
+      REVERSED_JSON=$(tail -n 20 "$CACHE_FILE" 2>/dev/null | jq -s 'reverse' 2>/dev/null)
       FAIL_COUNT=0
-      REVERSED=$(tail -n 20 "$CACHE_FILE" 2>/dev/null | sed '1!G;h;$!d')
-      while IFS= read -r line; do
-        [[ -z "$line" ]] && continue
-        LINE_TOOL=$(printf "%s" "$line" | jq -r '.tool // empty' 2>/dev/null)
-        LINE_CMD=$(printf "%s" "$line" | jq -r '.cmd_base // empty' 2>/dev/null)
-        LINE_EXIT=$(printf "%s" "$line" | jq -r '.exit // "0"' 2>/dev/null)
 
-        if [[ "$LINE_TOOL" == "Bash" ]] && [[ "$LINE_CMD" == "$CMD_BASE" ]] && [[ "$LINE_EXIT" != "0" ]]; then
-          FAIL_COUNT=$((FAIL_COUNT + 1))
-        else
-          if [[ "$LINE_TOOL" == "Bash" ]]; then
-            break
-          fi
-        fi
-      done <<< "$REVERSED"
+      if [[ -n "$REVERSED_JSON" ]] && [[ "$REVERSED_JSON" != "null" ]]; then
+        FAIL_COUNT=$(printf "%s" "$REVERSED_JSON" | jq --arg cmd "$CMD_BASE" '
+          [.[] | select(.tool == "Bash")] |
+          reduce .[] as $entry (
+            {count: 0, done: false};
+            if .done then .
+            elif ($entry.cmd_base == $cmd and $entry.exit != "0" and $entry.exit != "") then .count += 1
+            else .done = true
+            end
+          ) | .count
+        ' 2>/dev/null)
+        FAIL_COUNT=${FAIL_COUNT:-0}
+      fi
 
       if [[ "$FAIL_COUNT" -ge "$ALLAY_DRIFT_FAIL_THRESHOLD" ]]; then
         DRIFT_PATTERN="test_fail_loop"
