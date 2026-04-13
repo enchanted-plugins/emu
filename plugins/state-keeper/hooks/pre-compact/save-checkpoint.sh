@@ -66,10 +66,11 @@ if [[ -f "${STATE_DIR}/remember.md" ]]; then
   REMEMBER_CONTENT=$(cat "${STATE_DIR}/remember.md" 2>/dev/null || true)
 fi
 
-# ── Build checkpoint markdown ──
+# ── Build checkpoint markdown (heredoc with single-quoted delimiter for safety) ──
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-CHECKPOINT="# Allay Checkpoint
+CHECKPOINT=$(cat <<CHECKPOINT
+# Allay Checkpoint
 > Saved at: ${TIMESTAMP}
 > Session: ${SESSION_HASH}
 
@@ -90,7 +91,8 @@ ${PROJECT_INSTRUCTIONS:-No CLAUDE.md found}
 
 ## User-Flagged Context
 ${REMEMBER_CONTENT:-No items saved. Use /allay:checkpoint <text> to save.}
-"
+CHECKPOINT
+)
 
 # ── Enforce 50KB limit ──
 CHECKPOINT_BYTES=${#CHECKPOINT}
