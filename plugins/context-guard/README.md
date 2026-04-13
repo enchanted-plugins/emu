@@ -4,11 +4,46 @@
 
 **Hook type:** PostToolUse — fires after every tool call.
 
+## Components
+
+| Type | Name | Description |
+|------|------|-------------|
+| Hook | detect-drift.sh | Drift detection + token estimation on every tool call |
+| Skill | drift-awareness | Guides user out of unproductive loops |
+| Skill | token-awareness | Runway monitoring and token efficiency advice |
+| Command | /allay:report | Full session dashboard (Runway → Drift → Savings) |
+| Command | /allay:runway | Quick turns-until-compaction check |
+| Command | /allay:analytics | Per-tool token consumption breakdown |
+| Command | /allay:doctor | Diagnostic self-check for all plugins |
+| Agent | analyst | Background report generation (Haiku, forked) |
+
+## Architecture
+
+```
+PostToolUse (Bash|Read|Write|Edit|MultiEdit|Glob|Grep)
+    │
+    ▼
+detect-drift.sh
+    │
+    ├── Extract tool data (file path, hash, command, exit code)
+    ├── Append to session cache (/tmp/allay-drift-*.jsonl)
+    ├── Estimate tokens (input + result bytes)
+    ├── Log turn event to state/metrics.jsonl
+    ├── Check cooldown
+    └── Pattern detection
+        ├── Read/Glob/Grep → read_loop (3+ reads, no change)
+        ├── Write/Edit → edit_revert (hash matches previous)
+        └── Bash → test_fail_loop (3+ consecutive failures)
+            │
+            ▼
+        Fire alert via stderr + log drift_detected metric
+```
+
 ## Drift Alert
 
-The #1 frustration with Claude Code isn't cost — it's wasted time. "I spent 45 minutes before realizing Claude was going in circles."
+The #1 frustration with Claude Code isn't cost — it's wasted time.
 
-context-guard detects three drift patterns in real-time:
+Three patterns detected in real-time:
 
 ### Read Loop
 Same file read 3+ times without a Write that changes its hash.
@@ -36,15 +71,16 @@ Retrying without changes won't help.
 
 Alerts have a 5-turn cooldown to avoid noise.
 
-## Commands
+## Token Estimation
 
-- `/allay:report` — Full session dashboard (Runway → Drift → Savings)
-- `/allay:runway` — Quick turns-until-compaction check
-- `/allay:doctor` — Diagnostic self-check for all plugins
+Every tool call gets an estimated token count based on input + result byte sizes.
+Logged as `{"event":"turn","tool":"Read","tokens_est":1200}` to metrics.jsonl.
+This data powers `/allay:runway` and `/allay:analytics`.
 
 ## Performance
 
 Fires on every tool call. Designed to be fast:
 - `grep -c` for counting (no file loading)
 - Pattern detection is O(1) per call
+- Single `jq -s` on bounded `tail -n 20` for fail loop detection
 - ~200-500 cache lines per session — trivial for grep
