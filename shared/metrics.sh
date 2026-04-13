@@ -26,7 +26,7 @@ release_lock() {
 log_metric() {
   local file="${1:-state/metrics.jsonl}"
   local payload="$2"
-  local lock_dir="${file}${ALLAY_LOCK_SUFFIX:-'.lock'}"
+  local lock_dir="${file}${ALLAY_LOCK_SUFFIX}"
   local max_size="${ALLAY_MAX_METRICS_BYTES:-10485760}"
 
   # Validate JSON before writing (spec rule #8)
@@ -35,12 +35,7 @@ log_metric() {
   fi
 
   # Acquire lock (spec rule #1 — atomic mkdir, never flock)
-  local retries=50
-  while ! mkdir "$lock_dir" 2>/dev/null; do
-    ((retries--))
-    [[ $retries -le 0 ]] && return 0
-    sleep 0.1
-  done
+  acquire_lock "$lock_dir" || return 0
 
   # Rotate at 10MB (spec rule #10)
   if [[ -f "$file" ]]; then
@@ -54,6 +49,7 @@ log_metric() {
 
   mkdir -p "$(dirname "$file")"
   printf "%s\n" "$payload" >> "$file"
-  rmdir "$lock_dir" 2>/dev/null || true
+
+  release_lock "$lock_dir"
   return 0
 }
