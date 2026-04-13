@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Allay shared constants — sourced by all hooks and utilities
 
-ALLAY_VERSION="1.0.0"
+ALLAY_VERSION="2.0.0"
 
 # State file names
 ALLAY_MEMORY_FILE="state/memory.jsonl"

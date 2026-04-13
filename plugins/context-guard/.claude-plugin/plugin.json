@@ -1,17 +1,19 @@
 {
   "name": "allay-context-guard",
-  "description": "The eyes of Allay. Drift Alert detects Claude spinning in circles. Runway forecasts turns until compaction. Report proves exact savings.",
-  "version": "1.0.0",
+  "description": "The eyes of Allay. Drift Alert, Runway, Analytics, and Report.",
+  "version": "2.0.0",
   "author": { "name": "Allay" },
   "license": "MIT",
-  "keywords": ["drift", "runway", "context", "monitoring", "alerts"],
+  "keywords": ["drift", "runway", "context", "monitoring", "alerts", "analytics"],
   "commands": [
     "./commands/report.md",
     "./commands/runway.md",
-    "./commands/doctor.md"
+    "./commands/doctor.md",
+    "./commands/analytics.md"
   ],
   "skills": [
     "./skills/drift-awareness/",
     "./skills/token-awareness/"
-  ]
+  ],
+  "agents": "./agents/"
 }

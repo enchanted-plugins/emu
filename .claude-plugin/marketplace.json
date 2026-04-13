@@ -4,26 +4,26 @@
     "name": "Allay"
   },
   "metadata": {
-    "description": "Every token accounted for. Context health toolkit for Claude Code.",
-    "version": "1.0.0"
+    "description": "Every token accounted for. Context health platform for Claude Code.",
+    "version": "2.0.0"
   },
   "plugins": [
     {
       "name": "allay-state-keeper",
       "source": "./plugins/state-keeper",
-      "description": "Preserves Claude Code context across compactions. Writes checkpoint before compaction wipes context.",
+      "description": "Preserves Claude Code context across compactions. Writes checkpoint before compaction wipes context. Auto-restores after compaction.",
       "category": "development"
     },
     {
       "name": "allay-token-saver",
       "source": "./plugins/token-saver",
-      "description": "Reduces token usage by compressing verbose tool outputs and blocking duplicate file reads.",
+      "description": "Reduces token usage by compressing verbose tool outputs, blocking duplicate file reads, delta mode for re-reads, and output efficiency instructions.",
       "category": "development"
     },
     {
       "name": "allay-context-guard",
       "source": "./plugins/context-guard",
-      "description": "The eyes of Allay. Detects when Claude is spinning in circles (Drift Alert), forecasts turns until compaction (Runway), and proves exact savings (/allay:report).",
+      "description": "The eyes of Allay. Drift Alert catches Claude spinning in circles. Runway forecasts turns until compaction. Analytics shows per-tool token consumption. Report proves exact savings.",
       "category": "development"
     }
   ]

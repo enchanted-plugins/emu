@@ -1,9 +1,12 @@
 {
   "name": "allay-token-saver",
-  "description": "Reduces token usage by compressing verbose tool outputs and blocking duplicate file reads.",
-  "version": "1.0.0",
+  "description": "Reduces token usage via compression, dedup, delta mode, and output efficiency.",
+  "version": "2.0.0",
   "author": { "name": "Allay" },
   "license": "MIT",
-  "keywords": ["tokens", "compression", "dedup", "optimization"],
-  "skills": ["./skills/compression-rules/"]
+  "keywords": ["tokens", "compression", "dedup", "optimization", "delta", "output-efficiency"],
+  "skills": [
+    "./skills/compression-rules/",
+    "./skills/output-efficiency/"
+  ]
 }
