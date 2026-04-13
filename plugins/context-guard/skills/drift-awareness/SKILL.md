@@ -5,6 +5,10 @@ description: >
   Explains what drift means and how to break out.
   Auto-triggers on: "drift alert", "going in circles",
   "stuck", "keeps reading same file", "test won't pass".
+allowed-tools:
+  - Read
+  - Grep
+  - Bash
 ---
 
 <purpose>

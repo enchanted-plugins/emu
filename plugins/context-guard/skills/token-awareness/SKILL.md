@@ -5,6 +5,10 @@ description: >
   is approaching. Teaches token-efficient behavior.
   Triggers on: "context is low", "running out of space",
   slow responses, or after 30+ turns in a session.
+allowed-tools:
+  - Read
+  - Grep
+  - Bash
 ---
 
 <purpose>
@@ -14,8 +18,9 @@ context constraints. Never alarm. Always give next action.
 
 <runway_assessment>
 STEP 1: Check ${CLAUDE_PLUGIN_ROOT}/state/metrics.jsonl for recent turn data.
-STEP 2: Average tokens per turn (last 5 turns).
-STEP 3: Estimate remaining capacity.
+         Look for {"event":"turn"} entries with tokens_est field.
+STEP 2: Average tokens_est from last 5 turn events.
+STEP 3: Estimate remaining capacity (200K context ÷ average = turns remaining).
 STEP 4: remaining ÷ average = turns remaining.
 
 IF turns > 20: say nothing. Continue working.

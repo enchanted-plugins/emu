@@ -5,6 +5,9 @@ description: >
   Auto-triggers when: files being edited are unknown,
   project instructions are unclear, or user says
   "what happened" / "what were we doing".
+allowed-tools:
+  - Read
+  - Bash
 ---
 
 <purpose>

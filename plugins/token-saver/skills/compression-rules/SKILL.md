@@ -4,6 +4,9 @@ description: >
   Reference when user asks why output was truncated
   or how to bypass compression. Also use before every
   bash command compression decision.
+allowed-tools:
+  - Read
+  - Bash
 ---
 
 <purpose>
@@ -21,11 +24,38 @@ Apply rules mechanically. Do not interpret content.
 IF "npm test" OR "yarn test" OR "pnpm test" OR "vitest" OR "jest":
   Append: 2>&1 | tail -n 40
 
+IF "python -m pytest" OR "pytest" OR "python -m unittest":
+  Append: 2>&1 | grep -E "(PASSED|FAILED|ERROR|passed|failed)" | tail -n 30
+
+IF "go test":
+  Append: 2>&1 | grep -E "(^ok|^FAIL|PASS|FAIL|panic)" | tail -n 30
+
+IF "mvn test" OR "gradle test":
+  Append: 2>&1 | grep -E "(BUILD |Tests run:|Test .*FAILED)" | tail -n 20
+
+IF "dotnet build" OR "dotnet test":
+  Append: 2>&1 | grep -E "(Build succeeded|FAILED|Passed|Failed|Test Run)" | tail -n 20
+
 IF "npm install" OR "yarn" OR "pnpm install":
   Append: 2>&1 | grep -E "(ERR|error|added|removed)" | tail -n 20
 
 IF "cargo build" OR "cargo test":
   Append: 2>&1 | grep -E "(error|warning|test result)" | tail -n 30
+
+IF "make" OR "make build":
+  Append: 2>&1 | grep -E "(Error|error|warning|make:)" || echo "Build succeeded"
+
+IF "docker build":
+  Append: 2>&1 | grep -E "(^Step |^Successfully |^#[0-9]+ |ERROR)" | tail -n 30
+
+IF "terraform plan":
+  Append: 2>&1 | grep -E "(Plan:|No changes|Error)" | tail -n 10
+
+IF "eslint" OR "npx eslint":
+  Append: 2>&1 | grep -E "(✖|error|warning|problems)" | head -n 20
+
+IF "tsc" OR "npx tsc":
+  Append: 2>&1 | grep -E "(error TS|Found [0-9])" | head -n 20
 
 IF "git log" AND no "-n" flag AND no "--oneline":
   Add: --oneline -20
