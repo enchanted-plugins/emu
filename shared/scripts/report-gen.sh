@@ -36,11 +36,12 @@ CG_METRICS="${PLUGINS_DIR}/context-guard/state/metrics.jsonl"
 count_events() {
   local file="$1"
   local event="$2"
+  local count=0
   if [[ -f "$file" ]]; then
-    grep -c "\"${event}\"" "$file" 2>/dev/null || echo "0"
-  else
-    echo "0"
+    count=$(grep -c "\"${event}\"" "$file" 2>/dev/null) || true
+    count=$(echo "$count" | tr -d '[:space:]')
   fi
+  echo "${count:-0}"
 }
 
 CHECKPOINTS=$(count_events "$SK_METRICS" "checkpoint_saved")
@@ -61,8 +62,8 @@ TOTAL_SAVINGS=$((COMPRESSION_SAVINGS + DUPLICATE_SAVINGS + DRIFT_SAVINGS))
 AVG_TOKENS=0
 RUNWAY="N/A"
 if [[ -f "$CG_METRICS" ]] && [[ "$TURNS" -gt 0 ]]; then
-  RECENT_TOKENS=$(grep '"event":"turn"' "$CG_METRICS" 2>/dev/null | tail -5 | jq -r '.tokens_est // 0' 2>/dev/null | paste -sd+ 2>/dev/null | bc 2>/dev/null || echo "0")
-  RECENT_COUNT=$(grep '"event":"turn"' "$CG_METRICS" 2>/dev/null | tail -5 | wc -l | tr -d ' ')
+  RECENT_TOKENS=$(grep '"event":"turn"' "$CG_METRICS" 2>/dev/null | tail -5 | jq -r '.tokens_est // 0' 2>/dev/null | awk '{s+=$1} END{print s+0}' 2>/dev/null || echo "0")
+  RECENT_COUNT=$(grep '"event":"turn"' "$CG_METRICS" 2>/dev/null | tail -5 | wc -l | tr -d '[:space:]')
   if [[ "$RECENT_COUNT" -gt 0 ]] && [[ "$RECENT_TOKENS" -gt 0 ]]; then
     AVG_TOKENS=$((RECENT_TOKENS / RECENT_COUNT))
     if [[ "$AVG_TOKENS" -gt 0 ]]; then
@@ -178,7 +179,7 @@ echo "$OUTPUT_PATH"
 # ── Update learnings (Bayesian Strategy Accumulation) ──
 LEARNINGS_SCRIPT="$(cd "$(dirname "$0")" && pwd)/learnings.sh"
 if [[ -f "$LEARNINGS_SCRIPT" ]]; then
-  bash "$LEARNINGS_SCRIPT" "$PLUGINS_DIR" 2>/dev/null || true
+  bash "$LEARNINGS_SCRIPT" "$PLUGINS_DIR" >/dev/null 2>/dev/null || true
 fi
 
 # ── Optional: generate PDF if Python 3 available ──
