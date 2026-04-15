@@ -132,7 +132,7 @@
 <div class="brand-bar"></div>
 <div class="container">
   <h1>Allay <span>Architecture Explorer</span></h1>
-  <div class="subtitle">Auto-generated from codebase — 2026-04-15 04:49 UTC</div>
+  <div class="subtitle">Auto-generated from codebase — 2026-04-15 05:26 UTC</div>
 
   <h2>System Diagrams</h2>
   <div class="tabs">
@@ -210,17 +210,17 @@
     <pre class="mermaid">graph TD
     start(["Session Start"]) --> turns
     subgraph turns["Active Session"]
-        t1["Turn N: Tool Call"] --> pre["PreToolUse<br/>token-saver"]
-        pre -->|"compress / dedup / delta"| exec["Tool Executes"]
-        exec --> post["PostToolUse<br/>context-guard"]
-        post -->|"drift detect + token est."| t1
+        t1["Turn N: Tool Call"]
+        t1 --> pre["PreToolUse<br/>token-saver"]
+        pre --> exec["Tool Executes"]
+        exec --> post["PostToolUse<br/>context-guard, token-saver"]
+        post --> t1
     end
     turns -->|"Context full"| compact["⚠️ Compaction"]
     compact --> precompact["PreCompact<br/>state-keeper"]
-    precompact -->|"checkpoint.md"| wipe["Context Wiped"]
-    wipe --> restore["state-recovery skill<br/>or restorer agent"]
-    restore -->|"Read checkpoint.md"| resume(["Session Continues"])
-
+    precompact --> wipe["Context Wiped"]
+    wipe --> restore["Restore context"]
+    restore --> resume(["Session Continues"])
     style compact fill:#f85149,color:#0d1117
     style precompact fill:#d29922,color:#0d1117
     style restore fill:#3fb950,color:#0d1117</pre>

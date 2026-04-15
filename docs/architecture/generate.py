@@ -241,25 +241,46 @@ def gen_dataflow_mermaid(plugins):
     return "\n".join(lines)
 
 
-def gen_session_lifecycle_mermaid():
-    """Session lifecycle: turn flow → compaction → restore."""
-    return """graph TD
-    start(["Session Start"]) --> turns
-    subgraph turns["Active Session"]
-        t1["Turn N: Tool Call"] --> pre["PreToolUse<br/>token-saver"]
-        pre -->|"compress / dedup / delta"| exec["Tool Executes"]
-        exec --> post["PostToolUse<br/>context-guard"]
-        post -->|"drift detect + token est."| t1
-    end
-    turns -->|"Context full"| compact["⚠️ Compaction"]
-    compact --> precompact["PreCompact<br/>state-keeper"]
-    precompact -->|"checkpoint.md"| wipe["Context Wiped"]
-    wipe --> restore["state-recovery skill<br/>or restorer agent"]
-    restore -->|"Read checkpoint.md"| resume(["Session Continues"])
+def gen_session_lifecycle_mermaid(plugins):
+    """Session lifecycle: auto-detect phases from plugins."""
+    # Collect which plugins own which phases
+    phase_plugins = {}
+    for p in plugins:
+        for h in p["hooks"]:
+            phase_plugins.setdefault(h["phase"], []).append(p["short"])
 
-    style compact fill:#f85149,color:#0d1117
-    style precompact fill:#d29922,color:#0d1117
-    style restore fill:#3fb950,color:#0d1117"""
+    lines = ["graph TD", '    start(["Session Start"]) --> turns']
+    lines.append('    subgraph turns["Active Session"]')
+    lines.append('        t1["Turn N: Tool Call"]')
+
+    if "PreToolUse" in phase_plugins:
+        names = ", ".join(sorted(set(phase_plugins["PreToolUse"])))
+        lines.append(f'        t1 --> pre["PreToolUse<br/>{names}"]')
+        lines.append('        pre --> exec["Tool Executes"]')
+    else:
+        lines.append('        t1 --> exec["Tool Executes"]')
+
+    if "PostToolUse" in phase_plugins:
+        names = ", ".join(sorted(set(phase_plugins["PostToolUse"])))
+        lines.append(f'        exec --> post["PostToolUse<br/>{names}"]')
+        lines.append('        post --> t1')
+    else:
+        lines.append('        exec --> t1')
+
+    lines.append("    end")
+
+    if "PreCompact" in phase_plugins:
+        names = ", ".join(sorted(set(phase_plugins["PreCompact"])))
+        lines.append(f'    turns -->|"Context full"| compact["⚠️ Compaction"]')
+        lines.append(f'    compact --> precompact["PreCompact<br/>{names}"]')
+        lines.append('    precompact --> wipe["Context Wiped"]')
+        lines.append('    wipe --> restore["Restore context"]')
+        lines.append('    restore --> resume(["Session Continues"])')
+        lines.append('    style compact fill:#f85149,color:#0d1117')
+        lines.append('    style precompact fill:#d29922,color:#0d1117')
+        lines.append('    style restore fill:#3fb950,color:#0d1117')
+
+    return "\n".join(lines)
 
 
 # ── HTML generation ───────────────────────────────────────────────────
@@ -517,7 +538,7 @@ def main():
         "highlevel": gen_highlevel_mermaid(plugins),
         "hooks": gen_hooks_mermaid(plugins),
         "dataflow": gen_dataflow_mermaid(plugins),
-        "lifecycle": gen_session_lifecycle_mermaid(),
+        "lifecycle": gen_session_lifecycle_mermaid(plugins),
     }
 
     # Write .mmd files
