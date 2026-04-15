@@ -182,49 +182,27 @@ if [[ -f "$LEARNINGS_SCRIPT" ]]; then
   bash "$LEARNINGS_SCRIPT" "$PLUGINS_DIR" >/dev/null 2>/dev/null || true
 fi
 
-# ── Optional: generate PDF if Python 3 available ──
-if command -v python3 >/dev/null 2>&1; then
-  PDF_PATH="${OUTPUT_PATH%.txt}.pdf"
-  python3 -c "
-import sys
-try:
-    from reportlab.lib.pagesizes import letter
-    from reportlab.lib.colors import HexColor
-    from reportlab.pdfgen import canvas
+# ── Generate HTML → PDF report (Flux pattern) ──
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PDF_SCRIPT="${SCRIPT_DIR}/report-pdf.py"
+PDF_PATH="${OUTPUT_PATH%.txt}.pdf"
 
-    c = canvas.Canvas('${PDF_PATH}', pagesize=letter)
-    width, height = letter
+if [[ -f "$PDF_SCRIPT" ]]; then
+  # Try python, python3, py in order
+  PYTHON_CMD=""
+  for cmd in python python3 py; do
+    if command -v "$cmd" >/dev/null 2>&1; then
+      PYTHON_CMD="$cmd"
+      break
+    fi
+  done
 
-    # Dark background
-    c.setFillColor(HexColor('#1a1a2e'))
-    c.rect(0, 0, width, height, fill=1)
-
-    # Read report text
-    with open('${OUTPUT_PATH}', 'r') as f:
-        lines = f.readlines()
-
-    c.setFillColor(HexColor('#e0e0e0'))
-    c.setFont('Courier', 9)
-    y = height - 40
-    for line in lines:
-        if y < 40:
-            c.showPage()
-            c.setFillColor(HexColor('#1a1a2e'))
-            c.rect(0, 0, width, height, fill=1)
-            c.setFillColor(HexColor('#e0e0e0'))
-            c.setFont('Courier', 9)
-            y = height - 40
-        c.drawString(40, y, line.rstrip())
-        y -= 12
-
-    c.save()
-    print('${PDF_PATH}', file=sys.stderr)
-except ImportError:
-    # reportlab not available — PDF generation skipped
-    pass
-except Exception:
-    pass
-" 2>/dev/null || true
+  if [[ -n "$PYTHON_CMD" ]]; then
+    PDF_RESULT=$("$PYTHON_CMD" "$PDF_SCRIPT" "$PLUGINS_DIR" "$PDF_PATH" 2>/dev/null) || true
+    if [[ -n "$PDF_RESULT" ]] && [[ -f "$PDF_RESULT" ]]; then
+      echo "$PDF_RESULT"
+    fi
+  fi
 fi
 
 exit 0
