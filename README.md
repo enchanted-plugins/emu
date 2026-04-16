@@ -11,7 +11,25 @@ The context health platform that learns what wastes your tokens — and stops it
 
 ---
 
+## Contents
+
+- [How It Works](#how-it-works)
+- [What Makes Allay Different](#what-makes-allay-different)
+- [Session Lifecycle](#session-lifecycle)
+- [The Science Behind Allay](#the-science-behind-allay)
+- [Install](#install)
+- [3 Plugins, 4 Agents, 7 Algorithms](#3-plugins-4-agents-7-algorithms)
+- [What You Get Per Session](#what-you-get-per-session)
+- [Commands](#commands)
+- [Compression Rules (15)](#compression-rules-15)
+- [vs Everything Else](#vs-everything-else)
+- [Architecture](#architecture)
+- [Contributing](#contributing)
+- [License](#license)
+
 ## How It Works
+
+Allay splits into three plugins that each own one lifecycle phase. **token-saver** fires on `PreToolUse` to compress verbose Bash output (A3), block duplicate file reads (A5), and return deltas on changed re-reads (A6). **context-guard** fires on `PostToolUse` to forecast runway (A2) and detect drift patterns (A1). **state-keeper** fires on `PreCompact` to write an atomic checkpoint (A4). Across sessions, A7 accumulates per-strategy success rates. The diagram below shows this flow.
 
 ```mermaid
 graph TD
@@ -113,6 +131,8 @@ interventions worked — then adjusts its internal model via exponential moving 
 remaining, and accumulated learnings. Conservative methodology. We don't inflate numbers.
 
 ## Session Lifecycle
+
+Every turn cycles through the same path. Tool calls hit `PreToolUse` (token-saver), then execute, then hit `PostToolUse` (context-guard). When context approaches full, `PreCompact` fires and state-keeper writes `checkpoint.md` before the wipe. On resume, the restorer agent reads the checkpoint back and the session continues without manual re-briefing.
 
 ```mermaid
 graph LR
@@ -244,6 +264,8 @@ bash <(curl -s https://raw.githubusercontent.com/enchanted-plugins/allay/main/in
 | compressor | Haiku | token-saver | Compression strategy analysis |
 
 ## What You Get Per Session
+
+Tool calls write events to three plugin state directories. `token-saver/state/metrics.jsonl` records compressions, dedup blocks, and delta reads. `context-guard/state/metrics.jsonl` records per-turn token estimates and drift detections; `learnings.json` accumulates cross-session strategy rates (A7). `state-keeper/state/` holds the latest `checkpoint.md`, any user-flagged `remember.md`, and checkpoint events. `/allay:report` reads all three plugins to produce the session dashboard.
 
 ```mermaid
 graph TB
