@@ -255,7 +255,7 @@ surfaces the per-skill breakdown.
 Concurrent Claude Code sessions across multiple git worktrees of the same repo
 are unified into one view by the root-commit hash:
 
-$$\text{repo\_id} = \text{sha256}(c_0)_{[:12]}, \quad c_0 = \texttt{git rev-list --max-parents=0 HEAD}$$
+$$\text{repo\\_id} = \text{sha256}(c_0)_{[:12]}, \quad c_0 = \texttt{git rev-list --max-parents=0 HEAD}$$
 
 The root commit is stable across clones, forks, renames, and worktree paths —
 basename-of-toplevel is not. Cross-worktree events land in
@@ -264,7 +264,7 @@ basename-of-toplevel is not. Cross-worktree events land in
 interleaving on filesystems without atomicity guarantees (Windows, NFS).
 Readers glob all shards and merge by `ts`:
 
-$$\text{unified\_session} = \bigcup_{w \in W} \text{shards}(w), \quad W = \text{worktrees}(\text{repo\_id})$$
+$$\text{unified\\_session} = \bigcup_{w \in W} \text{shards}(w), \quad W = \text{worktrees}(\text{repo\\_id})$$
 
 `/allay:report` renders a WORKTREE OVERVIEW section when ≥ 2 worktrees have
 written. `/allay:report --global` forces the unified view across every session
