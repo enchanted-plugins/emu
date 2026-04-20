@@ -30,9 +30,9 @@ The question this plugin answers: *What did I spend?*
 - [How It Works](#how-it-works)
 - [What Makes Allay Different](#what-makes-allay-different)
 - [The Full Lifecycle](#the-full-lifecycle)
+- [Install](#install)
 - [3 Plugins, 4 Agents, 9 Algorithms](#3-plugins-4-agents-9-algorithms)
 - [What You Get Per Session](#what-you-get-per-session)
-- [Install](#install)
 - [The Science Behind Allay](#the-science-behind-allay)
 - [Commands](#commands)
 - [Compression Rules (15)](#compression-rules-15)
@@ -143,7 +143,82 @@ Source: [docs/assets/lifecycle.mmd](docs/assets/lifecycle.mmd) · Regeneration c
 
 Every tool call flows through the same pipeline. When context fills up, state-keeper saves a checkpoint before the wipe, and the restorer agent brings it back autonomously.
 
----
+## Install
+
+Allay ships as 3 plugins cooperating across PreToolUse / PostToolUse / PreCompact. One meta-plugin — `full` — lists all three as dependencies, so a single install pulls in the whole platform.
+
+**In Claude Code** (recommended):
+
+```
+/plugin marketplace add enchanted-plugins/allay
+/plugin install full@allay
+```
+
+Claude Code resolves the dependency list and installs all 3 plugins. Verify with `/plugin list`.
+
+**Want to cherry-pick?** Individual plugins are still installable by name — e.g. `/plugin install allay-context-guard@allay` if you only want the drift/runway dashboard. The three lifecycle phases are designed to cooperate, though, so `full@allay` is the path we recommend.
+
+**Via shell** (also installs `shared/*.sh` locally so hooks work offline):
+
+```bash
+bash <(curl -s https://raw.githubusercontent.com/enchanted-plugins/allay/main/install.sh)
+```
+
+## 3 Plugins, 4 Agents, 9 Algorithms
+
+| Plugin | Hook | Command | Algorithms |
+|--------|------|---------|------------|
+| state-keeper | PreCompact | `/allay:checkpoint` | A4 |
+| token-saver | PreToolUse + PostToolUse | — | A3, A5, A6 |
+| context-guard | PostToolUse | `/allay:report` | A1, A2, A8 |
+| shared | — | — | A7, A9 |
+
+| Agent | Model | Plugin | What |
+|-------|-------|--------|------|
+| analyst | Haiku | context-guard | Background report generation |
+| forecaster | Haiku | context-guard | Runway forecast with confidence interval |
+| restorer | Haiku | state-keeper | Autonomous context restoration |
+| compressor | Haiku | token-saver | Compression strategy analysis |
+
+## What You Get Per Session
+
+Tool calls write events to three plugin state directories. `token-saver/state/metrics.jsonl` records compressions, dedup blocks, and delta reads. `context-guard/state/metrics.jsonl` records per-turn token estimates and drift detections; `learnings.json` accumulates cross-session strategy rates (A7). `state-keeper/state/` holds the latest `checkpoint.md`, any user-flagged `remember.md`, and checkpoint events. `/allay:report` reads all three plugins to produce the session dashboard.
+
+<p align="center">
+  <a href="docs/assets/state-flow.mmd" title="View state-flow diagram source (Mermaid)">
+    <img src="docs/assets/state-flow.svg"
+         alt="Allay per-session state flow: tool calls (Bash, Read, Write, Glob/Grep) append events to three JSONL journals (token-saver, context-guard, state-keeper), which are merged by /allay:report into a session dashboard; A7 learnings accumulate across sessions in learnings.json"
+         width="100%" style="max-width:1100px;">
+  </a>
+</p>
+
+<sub align="center">
+
+Source: [docs/assets/state-flow.mmd](docs/assets/state-flow.mmd) · Regeneration command in [docs/assets/README.md](docs/assets/README.md).
+
+</sub>
+
+```
+state-keeper/state/
+├── checkpoint.md        # Pre-compaction snapshot (branch, files, instructions)
+├── remember.md          # User-flagged context (/allay:checkpoint items)
+└── metrics.jsonl        # checkpoint_saved events
+
+token-saver/state/
+└── metrics.jsonl        # bash_compressed, duplicate_blocked, delta_read events
+
+context-guard/state/
+├── metrics.jsonl        # turn events — now include "skill" field (A8)
+├── skill-metrics.jsonl  # A8 — rich per-skill events (only when a skill is active)
+├── active-skills.json   # A8 — live scope stack (invocation-id keyed)
+└── .session             # A9 — per-worktree session id (gitignored)
+
+$XDG_STATE_HOME/allay/<repo_id>/       # A9 — cross-worktree global
+└── skill-metrics-global.<pid>.jsonl   # per-PID shard; readers glob + merge
+
+$XDG_DATA_HOME/allay/<repo_id>/        # A9 — long-lived learnings
+└── learnings.json                     # A7 strategy rates; migrated from local
+```
 
 ## The Science Behind Allay
 
@@ -255,85 +330,6 @@ Learnings (A7) also migrate to `$XDG_DATA_HOME/allay/<repo_id>/learnings.json` �
 the data dir per XDG spec — so cross-session accumulation survives cache wipes
 and spans every worktree without symlinks.
 
----
-
-## Install
-
-Allay ships as 3 plugins cooperating across PreToolUse / PostToolUse / PreCompact. One meta-plugin — `full` — lists all three as dependencies, so a single install pulls in the whole platform.
-
-**In Claude Code** (recommended):
-
-```
-/plugin marketplace add enchanted-plugins/allay
-/plugin install full@allay
-```
-
-Claude Code resolves the dependency list and installs all 3 plugins. Verify with `/plugin list`.
-
-**Want to cherry-pick?** Individual plugins are still installable by name — e.g. `/plugin install allay-context-guard@allay` if you only want the drift/runway dashboard. The three lifecycle phases are designed to cooperate, though, so `full@allay` is the path we recommend.
-
-**Via shell** (also installs `shared/*.sh` locally so hooks work offline):
-
-```bash
-bash <(curl -s https://raw.githubusercontent.com/enchanted-plugins/allay/main/install.sh)
-```
-
-## 3 Plugins, 4 Agents, 9 Algorithms
-
-| Plugin | Hook | Command | Algorithms |
-|--------|------|---------|------------|
-| state-keeper | PreCompact | `/allay:checkpoint` | A4 |
-| token-saver | PreToolUse + PostToolUse | — | A3, A5, A6 |
-| context-guard | PostToolUse | `/allay:report` | A1, A2, A8 |
-| shared | — | — | A7, A9 |
-
-| Agent | Model | Plugin | What |
-|-------|-------|--------|------|
-| analyst | Haiku | context-guard | Background report generation |
-| forecaster | Haiku | context-guard | Runway forecast with confidence interval |
-| restorer | Haiku | state-keeper | Autonomous context restoration |
-| compressor | Haiku | token-saver | Compression strategy analysis |
-
-## What You Get Per Session
-
-Tool calls write events to three plugin state directories. `token-saver/state/metrics.jsonl` records compressions, dedup blocks, and delta reads. `context-guard/state/metrics.jsonl` records per-turn token estimates and drift detections; `learnings.json` accumulates cross-session strategy rates (A7). `state-keeper/state/` holds the latest `checkpoint.md`, any user-flagged `remember.md`, and checkpoint events. `/allay:report` reads all three plugins to produce the session dashboard.
-
-<p align="center">
-  <a href="docs/assets/state-flow.mmd" title="View state-flow diagram source (Mermaid)">
-    <img src="docs/assets/state-flow.svg"
-         alt="Allay per-session state flow: tool calls (Bash, Read, Write, Glob/Grep) append events to three JSONL journals (token-saver, context-guard, state-keeper), which are merged by /allay:report into a session dashboard; A7 learnings accumulate across sessions in learnings.json"
-         width="100%" style="max-width:1100px;">
-  </a>
-</p>
-
-<sub align="center">
-
-Source: [docs/assets/state-flow.mmd](docs/assets/state-flow.mmd) · Regeneration command in [docs/assets/README.md](docs/assets/README.md).
-
-</sub>
-
-```
-state-keeper/state/
-├── checkpoint.md        # Pre-compaction snapshot (branch, files, instructions)
-├── remember.md          # User-flagged context (/allay:checkpoint items)
-└── metrics.jsonl        # checkpoint_saved events
-
-token-saver/state/
-└── metrics.jsonl        # bash_compressed, duplicate_blocked, delta_read events
-
-context-guard/state/
-├── metrics.jsonl        # turn events — now include "skill" field (A8)
-├── skill-metrics.jsonl  # A8 — rich per-skill events (only when a skill is active)
-├── active-skills.json   # A8 — live scope stack (invocation-id keyed)
-└── .session             # A9 — per-worktree session id (gitignored)
-
-$XDG_STATE_HOME/allay/<repo_id>/       # A9 — cross-worktree global
-└── skill-metrics-global.<pid>.jsonl   # per-PID shard; readers glob + merge
-
-$XDG_DATA_HOME/allay/<repo_id>/        # A9 — long-lived learnings
-└── learnings.json                     # A7 strategy rates; migrated from local
-```
-
 ## Commands
 
 | Command | Plugin | What |
@@ -413,12 +409,6 @@ Full interactive architecture explorer with 4 tabbed diagrams and plugin compone
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md)
-
-## Origin
-
-Allay takes its name from **Minecraft** — the allay is the helper mob that collects items, remembers what it was shown, and delivers quietly. Companion to the crafting loop. In this ecosystem, Allay does the same for your Claude Code session: collects context, remembers what you were doing, returns it when the window resets.
-
-The plugin answers the second of the Five Questions every AI-assisted session surfaces: *"What did I spend?"* See [docs/ecosystem.md](docs/ecosystem.md) for the full map.
 
 ## License
 
