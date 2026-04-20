@@ -8,7 +8,7 @@ root `README.md` references the files here as `<img>`.
 
 | File | Source | Regenerate |
 |------|--------|-----------|
-| `hooks.svg` | `hooks.mmd` | `npx @mermaid-js/mermaid-cli -i hooks.mmd -o hooks.svg -c mermaid.config.json -p puppeteer.config.json -b "#0a1628" -w 1800 && node apply-blueprint.js hooks.svg` |
+| `pipeline.svg` | `pipeline.mmd` | `npx @mermaid-js/mermaid-cli -i pipeline.mmd -o pipeline.svg -c mermaid.config.json -p puppeteer.config.json -b "#0a1628" -w 1800 && node apply-blueprint.js pipeline.svg` |
 | `lifecycle.svg` | `lifecycle.mmd` | `npx @mermaid-js/mermaid-cli -i lifecycle.mmd -o lifecycle.svg -c mermaid.config.json -p puppeteer.config.json -b "#0a1628" -w 1800 && node apply-blueprint.js lifecycle.svg` |
 | `state-flow.svg` | `state-flow.mmd` | `npx @mermaid-js/mermaid-cli -i state-flow.mmd -o state-flow.svg -c mermaid.config.json -p puppeteer.config.json -b "#0a1628" -w 1800 && node apply-blueprint.js state-flow.svg` |
 | `math/*.svg` | `render-math.js` | `npm install --prefix . mathjax-full && node render-math.js` |

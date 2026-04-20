@@ -14,11 +14,11 @@ config:
       bottom: 18
 ---
 flowchart TD
-    TitleBlock["<div style='font-family:ui-monospace,SFMono-Regular,Consolas,monospace;text-align:center;min-width:900px;padding:6px 10px;line-height:1.8'><div style='color:#58a6ff;font-size:15px;letter-spacing:6px;border-bottom:1px solid #1e3a5f;padding-bottom:10px;margin-bottom:10px'>ALLAY &nbsp;·&nbsp; HOOK&nbsp;BINDINGS &nbsp;·&nbsp; LIFECYCLE&nbsp;PHASES</div><div style='display:flex;gap:40px;justify-content:center;font-size:11px;color:#8b949e;letter-spacing:2px'><span>DWG&nbsp;&nbsp;<b style='color:#e6edf3'>ALY-001</b></span><span>REV&nbsp;&nbsp;<b style='color:#e6edf3'>A.1</b></span><span>SCALE&nbsp;&nbsp;<b style='color:#e6edf3'>1:1</b></span><span>PLUGINS&nbsp;&nbsp;<b style='color:#e6edf3'>n&nbsp;=&nbsp;3</b></span><span>SHEET&nbsp;&nbsp;<b style='color:#e6edf3'>01&nbsp;/&nbsp;01</b></span></div></div>"]
+    TitleBlock["<div style='font-family:ui-monospace,SFMono-Regular,Consolas,monospace;text-align:center;min-width:940px;padding:6px 10px;line-height:1.8'><div style='color:#58a6ff;font-size:15px;letter-spacing:6px;border-bottom:1px solid #1e3a5f;padding-bottom:10px;margin-bottom:10px'>ALLAY &nbsp;·&nbsp; PLUGINALLAY &nbsp;·&nbsp; HOOK&nbsp;BINDINGS &nbsp;·&nbsp; LIFECYCLE&nbsp;PHASESnbsp;WIRING &nbsp;·&nbsp; HOOKALLAY &nbsp;·&nbsp; HOOK&nbsp;BINDINGS &nbsp;·&nbsp; LIFECYCLE&nbsp;PHASESnbsp;ARCHITECTURE</div><div style='display:flex;gap:40px;justify-content:center;font-size:11px;color:#8b949e;letter-spacing:2px'><span>DWG&nbsp;&nbsp;<b style='color:#e6edf3'>ALY-001</b></span><span>REV&nbsp;&nbsp;<b style='color:#e6edf3'>A.1</b></span><span>SCALE&nbsp;&nbsp;<b style='color:#e6edf3'>1:1</b></span><span>PLUGINS&nbsp;&nbsp;<b style='color:#e6edf3'>n&nbsp;=&nbsp;3</b></span><span>SHEET&nbsp;&nbsp;<b style='color:#e6edf3'>01&nbsp;/&nbsp;01</b></span></div></div>"]
 
     CC(["<div style='text-align:center;line-height:1.8;padding:4px 12px'><b style='letter-spacing:1.5px'>CLAUDE&nbsp;CODE&nbsp;·&nbsp;TOOL&nbsp;CALLS</b><br/><span style='color:#8b949e;font-size:12px'>Bash · Read · Write · Edit · Glob · Grep</span></div>"])
 
-    subgraph TS["<div style='text-align:center;min-width:900px;line-height:2'><div><span style='font-family:ui-monospace,monospace;color:#8b949e;font-size:11px;letter-spacing:3px'>PLUGIN&nbsp;01&nbsp;·&nbsp;PreToolUse</span>&nbsp;&nbsp;·&nbsp;&nbsp;<b style='letter-spacing:2px'>TOKEN-SAVER</b></div><div style='color:#6e7681;font-size:11px;font-family:ui-monospace,monospace;letter-spacing:1.2px'>hook&nbsp;·&nbsp;compress&nbsp;·&nbsp;dedup&nbsp;·&nbsp;delta&nbsp;·&nbsp;τ&nbsp;≈&nbsp;~5ms/call</div></div>"]
+    subgraph TS["<div style='text-align:center;min-width:940px;line-height:2'><div><span style='font-family:ui-monospace,monospace;color:#8b949e;font-size:11px;letter-spacing:3px'>PLUGIN&nbsp;01&nbsp;·&nbsp;PreToolUse</span>&nbsp;&nbsp;·&nbsp;&nbsp;<b style='letter-spacing:2px'>TOKEN-SAVER</b></div><div style='color:#6e7681;font-size:11px;font-family:ui-monospace,monospace;letter-spacing:1.2px'>hook&nbsp;·&nbsp;compress&nbsp;·&nbsp;dedup&nbsp;·&nbsp;delta&nbsp;·&nbsp;τ&nbsp;≈&nbsp;~5ms/call</div></div>"]
         direction LR
         A3["<div style='text-align:center;line-height:1.7'>A3&nbsp;SHANNON<br/>COMPRESSION<br/><small style='color:#6e7681'>15 bash rules · H(O′) ≥ θH(O)</small></div>"]
         A5["<div style='text-align:center;line-height:1.7'>A5&nbsp;CONTENT-ADDRESSABLE<br/>DEDUP<br/><small style='color:#6e7681'>SHA-256 · TTL cache</small></div>"]
@@ -26,23 +26,23 @@ flowchart TD
         AGE["<div style='text-align:center;line-height:1.7'>TEMPORAL<br/>DECAY<br/><small style='color:#6e7681'>age-based alerts</small></div>"]
     end
 
-    subgraph CG["<div style='text-align:center;min-width:900px;line-height:2'><div><span style='font-family:ui-monospace,monospace;color:#8b949e;font-size:11px;letter-spacing:3px'>PLUGIN&nbsp;02&nbsp;·&nbsp;PostToolUse</span>&nbsp;&nbsp;·&nbsp;&nbsp;<b style='letter-spacing:2px'>CONTEXT-GUARD</b></div><div style='color:#6e7681;font-size:11px;font-family:ui-monospace,monospace;letter-spacing:1.2px'>hook&nbsp;·&nbsp;drift&nbsp;detection&nbsp;·&nbsp;runway&nbsp;forecast&nbsp;·&nbsp;τ&nbsp;≈&nbsp;~10ms/turn</div></div>"]
+    subgraph CG["<div style='text-align:center;min-width:940px;line-height:2'><div><span style='font-family:ui-monospace,monospace;color:#8b949e;font-size:11px;letter-spacing:3px'>PLUGIN&nbsp;02&nbsp;·&nbsp;PostToolUse</span>&nbsp;&nbsp;·&nbsp;&nbsp;<b style='letter-spacing:2px'>CONTEXT-GUARD</b></div><div style='color:#6e7681;font-size:11px;font-family:ui-monospace,monospace;letter-spacing:1.2px'>hook&nbsp;·&nbsp;drift&nbsp;detection&nbsp;·&nbsp;runway&nbsp;forecast&nbsp;·&nbsp;τ&nbsp;≈&nbsp;~10ms/turn</div></div>"]
         direction LR
         A1["<div style='text-align:center;line-height:1.7'>A1&nbsp;MARKOV<br/>DRIFT&nbsp;DETECTION<br/><small style='color:#6e7681'>read loop · edit-revert · fail loop</small></div>"]
         A2["<div style='text-align:center;line-height:1.7'>A2&nbsp;LINEAR<br/>RUNWAY&nbsp;FORECASTING<br/><small style='color:#6e7681'>R̂ ± 95% CI</small></div>"]
     end
 
-    subgraph SK["<div style='text-align:center;min-width:900px;line-height:2'><div><span style='font-family:ui-monospace,monospace;color:#8b949e;font-size:11px;letter-spacing:3px'>PLUGIN&nbsp;03&nbsp;·&nbsp;PreCompact</span>&nbsp;&nbsp;·&nbsp;&nbsp;<b style='letter-spacing:2px'>STATE-KEEPER</b></div><div style='color:#6e7681;font-size:11px;font-family:ui-monospace,monospace;letter-spacing:1.2px'>hook&nbsp;·&nbsp;checkpoint&nbsp;before&nbsp;wipe&nbsp;·&nbsp;≤&nbsp;50&nbsp;KB</div></div>"]
+    subgraph SK["<div style='text-align:center;min-width:940px;line-height:2'><div><span style='font-family:ui-monospace,monospace;color:#8b949e;font-size:11px;letter-spacing:3px'>PLUGIN&nbsp;03&nbsp;·&nbsp;PreCompact</span>&nbsp;&nbsp;·&nbsp;&nbsp;<b style='letter-spacing:2px'>STATE-KEEPER</b></div><div style='color:#6e7681;font-size:11px;font-family:ui-monospace,monospace;letter-spacing:1.2px'>hook&nbsp;·&nbsp;checkpoint&nbsp;before&nbsp;wipe&nbsp;·&nbsp;≤&nbsp;50&nbsp;KB</div></div>"]
         direction LR
         A4["<div style='text-align:center;line-height:1.7'>A4&nbsp;ATOMIC&nbsp;STATE<br/>SERIALIZATION<br/><small style='color:#6e7681'>write → validate → rename</small></div>"]
     end
 
-    subgraph A7Box["<div style='font-family:ui-monospace,monospace;color:#8b949e;font-size:11px;letter-spacing:3px;min-width:900px;text-align:center'>CROSS-SESSION&nbsp;&nbsp;·&nbsp;&nbsp;BAYESIAN&nbsp;ACCUMULATION</div>"]
+    subgraph A7Box["<div style='font-family:ui-monospace,monospace;color:#8b949e;font-size:11px;letter-spacing:3px;min-width:940px;text-align:center'>CROSS-SESSION&nbsp;&nbsp;·&nbsp;&nbsp;BAYESIAN&nbsp;ACCUMULATION</div>"]
         direction LR
         A7["<div style='text-align:center;line-height:1.7'>A7&nbsp;BAYESIAN<br/>STRATEGY&nbsp;ACCUMULATION<br/><small style='color:#6e7681'>r_new = αs + (1−α)r_prior · α=0.3</small></div>"]
     end
 
-    subgraph Legend["<div style='font-family:ui-monospace,monospace;color:#8b949e;font-size:11px;letter-spacing:3px;min-width:900px;text-align:center'>LEGEND&nbsp;&nbsp;·&nbsp;&nbsp;HOOK&nbsp;POINT&nbsp;→&nbsp;PLUGIN&nbsp;→&nbsp;ALGORITHMS</div>"]
+    subgraph Legend["<div style='font-family:ui-monospace,monospace;color:#8b949e;font-size:11px;letter-spacing:3px;min-width:940px;text-align:center'>LEGEND&nbsp;&nbsp;·&nbsp;&nbsp;HOOK&nbsp;POINT&nbsp;→&nbsp;PLUGIN&nbsp;→&nbsp;ALGORITHMS</div>"]
         direction LR
         lg1["<span style='color:#58a6ff'>■</span>&nbsp;&nbsp;PreToolUse&nbsp;·&nbsp;input&nbsp;shaping"] --- lg2["<span style='color:#3fb950'>■</span>&nbsp;&nbsp;PostToolUse&nbsp;·&nbsp;observation"] --- lg3["<span style='color:#d29922'>■</span>&nbsp;&nbsp;PreCompact&nbsp;·&nbsp;persistence"] --- lg4["<span style='color:#bc8cff'>■</span>&nbsp;&nbsp;Cross-session&nbsp;·&nbsp;learning"]
     end

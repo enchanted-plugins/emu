@@ -47,8 +47,8 @@ The question this plugin answers: *What did I spend?*
 Allay splits into three plugins that each own one lifecycle phase. **token-saver** fires on `PreToolUse` to compress verbose Bash output (A3), block duplicate file reads (A5), and return deltas on changed re-reads (A6). **context-guard** fires on `PostToolUse` to forecast runway (A2) and detect drift patterns (A1). **state-keeper** fires on `PreCompact` to write an atomic checkpoint (A4). Across sessions, A7 accumulates per-strategy success rates. The diagram below shows this flow.
 
 <p align="center">
-  <a href="docs/assets/hooks.mmd" title="View hook-binding diagram source (Mermaid)">
-    <img src="docs/assets/hooks.svg"
+  <a href="docs/assets/pipeline.mmd" title="View hook-binding diagram source (Mermaid)">
+    <img src="docs/assets/pipeline.svg"
          alt="Allay hook bindings: Claude Code tool calls fan out into token-saver (PreToolUse · A3/A5/A6), context-guard (PostToolUse · A1/A2), state-keeper (PreCompact · A4); drift/metric events feed A7 Bayesian cross-session accumulation"
          width="100%" style="max-width:1100px;">
   </a>
@@ -56,7 +56,7 @@ Allay splits into three plugins that each own one lifecycle phase. **token-saver
 
 <sub align="center">
 
-Source: [docs/assets/hooks.mmd](docs/assets/hooks.mmd) · Regeneration command in [docs/assets/README.md](docs/assets/README.md).
+Source: [docs/assets/pipeline.mmd](docs/assets/pipeline.mmd) · Regeneration command in [docs/assets/README.md](docs/assets/README.md).
 
 </sub>
 
