@@ -19,11 +19,17 @@ The context health platform that learns what wastes your tokens — and stops it
 
 ---
 
+## Origin
+
+Allay takes its name from the **allay mob in Minecraft** — a small winged creature that follows you, collects items matching what you show it, and drops the rest. Allay does the same with your session: keeps the signal, drops the duplicates, stops the runaway loops.
+
+The question this plugin answers: *What did I spend?*
+
 ## Contents
 
 - [How It Works](#how-it-works)
 - [What Makes Allay Different](#what-makes-allay-different)
-- [Session Lifecycle](#session-lifecycle)
+- [The Full Lifecycle](#the-full-lifecycle)
 - [3 Plugins, 4 Agents, 9 Algorithms](#3-plugins-4-agents-9-algorithms)
 - [What You Get Per Session](#what-you-get-per-session)
 - [Install](#install)
@@ -117,7 +123,7 @@ interventions worked — then adjusts its internal model via exponential moving 
 `/allay:report` shows exact savings per feature, drift alerts fired, turns
 remaining, and accumulated learnings. Conservative methodology. We don't inflate numbers.
 
-## Session Lifecycle
+## The Full Lifecycle
 
 Every turn cycles through the same path. Tool calls hit `PreToolUse` (token-saver), then execute, then hit `PostToolUse` (context-guard). When context approaches full, `PreCompact` fires and state-keeper writes `checkpoint.md` before the wipe. On resume, the restorer agent reads the checkpoint back and the session continues without manual re-briefing.
 
@@ -407,6 +413,12 @@ Full interactive architecture explorer with 4 tabbed diagrams and plugin compone
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md)
+
+## Origin
+
+Allay takes its name from **Minecraft** — the allay is the helper mob that collects items, remembers what it was shown, and delivers quietly. Companion to the crafting loop. In this ecosystem, Allay does the same for your Claude Code session: collects context, remembers what you were doing, returns it when the window resets.
+
+The plugin answers the second of the Five Questions every AI-assisted session surfaces: *"What did I spend?"* See [docs/ecosystem.md](docs/ecosystem.md) for the full map.
 
 ## License
 
