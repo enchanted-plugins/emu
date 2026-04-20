@@ -6,6 +6,7 @@
   <img alt="9 algorithms" src="https://img.shields.io/badge/Algorithms-9-58a6ff?style=for-the-badge">
   <img alt="4 agents" src="https://img.shields.io/badge/Agents-4-d29922?style=for-the-badge">
   <img alt="Honest numbers contract" src="https://img.shields.io/badge/Honest-Numbers-f0883e?style=for-the-badge">
+  <a href="https://www.repostatus.org/#active"><img alt="Project Status: Active" src="https://www.repostatus.org/badges/latest/active.svg"></a>
 </p>
 
 > An @enchanted-plugins product — algorithm-driven, agent-managed, self-learning.
@@ -25,21 +26,37 @@ Allay takes its name from the **allay mob in Minecraft** — a small winged crea
 
 The question this plugin answers: *What did I spend?*
 
+## Who this is for
+
+- Developers who've watched a session burn through context on re-reads, revert loops, or verbose tool output — and want an objective readout instead of a gut feeling.
+- Teams that need honest numbers (runway with a ±CI, drift with a specific pattern) for retrospectives, not a marketing dashboard.
+- Privacy-conscious users — everything Allay observes stays local; there is no outbound network code (see [PRIVACY.md](PRIVACY.md)).
+
+Not for:
+
+- Centralized-observability teams who need a cloud dashboard — Allay is machine-local by design.
+- Sessions where context burn is obviously the smaller problem than code correctness — reach for Hornet or Mantis first, then Allay.
+
 ## Contents
 
 - [How It Works](#how-it-works)
 - [What Makes Allay Different](#what-makes-allay-different)
 - [The Full Lifecycle](#the-full-lifecycle)
 - [Install](#install)
+- [Quickstart](#quickstart)
 - [3 Plugins, 4 Agents, 9 Algorithms](#3-plugins-4-agents-9-algorithms)
 - [What You Get Per Session](#what-you-get-per-session)
+- [Roadmap](#roadmap)
 - [The Science Behind Allay](#the-science-behind-allay)
 - [Commands](#commands)
 - [Compression Rules (15)](#compression-rules-15)
 - [vs Everything Else](#vs-everything-else)
 - [Agent Conduct (9 Modules)](#agent-conduct-9-modules)
 - [Architecture](#architecture)
+- [Acknowledgments](#acknowledgments)
+- [Versioning & release cadence](#versioning--release-cadence)
 - [Contributing](#contributing)
+- [Citation](#citation)
 - [License](#license)
 
 ## How It Works
@@ -164,6 +181,18 @@ Claude Code resolves the dependency list and installs all 3 plugins. Verify with
 bash <(curl -s https://raw.githubusercontent.com/enchanted-plugins/allay/main/install.sh)
 ```
 
+## Quickstart
+
+Install, then run Allay's self-check, then get a runway readout. Sixty seconds:
+
+```
+/plugin install full@allay
+/allay:doctor
+/allay:report
+```
+
+Expected: `/allay:doctor` confirms hooks registered, jq available, state dirs writable. `/allay:report` prints a session dashboard — token runway (`~N turns remaining`), per-tool token breakdown, any drift alerts fired. No config required; defaults are honest. See [docs/getting-started.md](docs/getting-started.md) for the full guided first run.
+
 ## 3 Plugins, 4 Agents, 9 Algorithms
 
 | Plugin | Hook | Command | Algorithms |
@@ -179,6 +208,10 @@ bash <(curl -s https://raw.githubusercontent.com/enchanted-plugins/allay/main/in
 | forecaster | Haiku | context-guard | Runway forecast with confidence interval |
 | restorer | Haiku | state-keeper | Autonomous context restoration |
 | compressor | Haiku | token-saver | Compression strategy analysis |
+
+## Roadmap
+
+Tracked in [docs/ROADMAP.md](docs/ROADMAP.md) and the shared [ecosystem map](https://github.com/enchanted-plugins/flux/blob/main/docs/ecosystem.md). For upcoming work specific to Allay, see issues tagged [roadmap](https://github.com/enchanted-plugins/allay/labels/roadmap).
 
 ## What You Get Per Session
 
@@ -406,9 +439,40 @@ Full interactive architecture explorer with 4 tabbed diagrams and plugin compone
 
 **[docs/architecture/](docs/architecture/)** — auto-generated from the codebase. Run `python docs/architecture/generate.py` to regenerate.
 
+## Acknowledgments
+
+Allay builds on foundations laid by others:
+
+- **[Claude Code](https://github.com/anthropics/claude-code)** (Anthropic) — the plugin surface this work extends.
+- **[Keep a Changelog](https://keepachangelog.com/)** — CHANGELOG convention.
+- **[Semantic Versioning](https://semver.org/)** — versioning contract.
+- **[Contributor Covenant](https://www.contributor-covenant.org/)** — Code of Conduct.
+- **[repostatus.org](https://www.repostatus.org/)** — status badge.
+- **[Citation File Format](https://citation-file-format.github.io/)** — citation metadata.
+- **[Conventional Commits](https://www.conventionalcommits.org/)** — commit convention.
+
+## Versioning & release cadence
+
+Allay follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Breaking changes land on major bumps only; the [CHANGELOG](CHANGELOG.md) flags them explicitly. Release cadence is opportunistic — tags land when accumulated fixes or features justify a cut, not on a fixed schedule. Migration notes between majors live in [docs/upgrading.md](docs/upgrading.md).
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md)
+
+## Citation
+
+If you use this project in research or derivative work, please cite it:
+
+```bibtex
+@software{allay_2026,
+  title = {Allay},
+  author = {{Klaiderman}},
+  year = {2026},
+  url = {https://github.com/enchanted-plugins/allay}
+}
+```
+
+See [CITATION.cff](CITATION.cff) for additional formats (APA, MLA, EndNote).
 
 ## License
 

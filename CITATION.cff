@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+title: "Allay"
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - alias: klaiderman
+    affiliation: "enchanted-plugins"
+repository-code: "https://github.com/enchanted-plugins/allay"
+url: "https://github.com/enchanted-plugins/allay"
+license: MIT
+version: "2.0.0"
+date-released: "2026-04-20"
+abstract: "Context-health companion for Claude Code: runway forecasting, drift detection, per-tool analytics, and atomic checkpointing — honest numbers, zero cloud."
+keywords:
+  - claude-code
+  - enchanted-plugins
+  - context-management
+  - token-tracking
+  - llm
