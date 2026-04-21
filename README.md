@@ -303,23 +303,21 @@ SHA-256 hash + TTL cache for read deduplication.
 
 TTL = 600s. Block unchanged, allow after expiry.
 
-### A6. Content-Addressable Delta
+### A6. Delta-Read Telemetry
 
-Extension of A5. Third decision path for changed files:
+Extension of A5. Tracks when changed files are re-read within TTL and emits telemetry:
 
-<p align="center"><img src="docs/assets/math/a6-delta.svg" alt="decision(f) = DELTA when hash differs from cache and Δt < TTL"></p>
+<p align="center"><img src="docs/assets/math/a6-delta.svg" alt="event: delta_read logged when hash differs from cache and Δt < TTL"></p>
 
-Returns unified diff with 3 context lines instead of full file content.
-Only activates when diff is smaller than half the full file.
+When a file is re-read after modification within the TTL window, the hook logs a `delta_read` event recording file path, full line count, and diff line count. Diff generation (unified format with context) is deferred to Phase 2; current implementation is telemetry-only.
 
-### A7. Bayesian Strategy Accumulation
+### A7. Exponential Strategy Averaging
 
-Exponential moving average over compression strategy success rates across sessions.
+Exponential moving average (EMA) over compression strategy success rates and drift frequencies across sessions.
 
 <p align="center"><img src="docs/assets/math/a7-bayesian.svg" alt="r_new = alpha · s_current + (1 - alpha) · r_prior; alpha = 0.3"></p>
 
-Detects dormant rules, chronic drift patterns, and velocity drift.
-Persisted to `learnings.json` after each report.
+Uses EMA with α=0.3 to blend current-session metrics into historical rates for compression rules, drift patterns, and velocity. Detects dormant rules, chronic drift patterns, and velocity trends. Persisted to `learnings.json` after each report.
 
 ### A8. Skill-Scoped Attribution
 
@@ -486,4 +484,4 @@ Allay is the **session-health layer** — it watches the token economy of every 
 
 Allay does not engineer prompts (Flux's lane), score change trust (Hornet's lane), review code correctness (Mantis's lane), enforce budget gates via kill-switches (Nook uses cooperative degradation, not pre-emption), or scan security surfaces (Reaper's lane). It observes token burn and keeps the session recoverable across compaction.
 
-See [docs/ecosystem.md § Data Flow Between Plugins](docs/ecosystem.md#data-flow-between-plugins) for the full map.
+See [../flux/docs/ecosystem.md § Data Flow Between Plugins](../flux/docs/ecosystem.md#data-flow-between-plugins) for the full map.

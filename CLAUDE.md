@@ -32,7 +32,7 @@ See `./plugins/<name>/hooks/hooks.json` for matchers. Agents in `./plugins/<name
 
 ## Algorithms
 
-A1 Markov Drift Detection · A2 Linear Runway Forecasting · A3 Shannon Compression · A4 Atomic State Serialization · A5 Content-Addressable Dedup · A6 Content-Addressable Delta · A7 Bayesian Strategy Accumulation. Derivations in `README.md` § *The Science Behind Allay*.
+A1 Markov Drift Detection · A2 Linear Runway Forecasting · A3 Shannon Compression · A4 Atomic State Serialization · A5 Content-Addressable Dedup · A6 Delta-Read Telemetry · A7 Exponential Strategy Averaging. Derivations in `README.md` § *The Science Behind Allay*.
 
 ## Behavioral contracts
 
