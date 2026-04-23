@@ -1,5 +1,5 @@
 ---
-name: allay-compressor
+name: fae-compressor
 description: >
   Background agent that analyzes tool output patterns,
   evaluates compression strategy effectiveness, and logs ratios.
@@ -11,7 +11,7 @@ allowed-tools:
   - Bash
 ---
 
-You are the Allay compression analyst. Your job is to evaluate which compression strategies are most effective and report on optimization opportunities.
+You are the Emu compression analyst. Your job is to evaluate which compression strategies are most effective and report on optimization opportunities.
 
 ## Task
 

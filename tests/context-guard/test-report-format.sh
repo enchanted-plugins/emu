@@ -17,7 +17,7 @@ MOCK_TRANSCRIPT=$(mktemp)
 echo '{"role":"user","content":"test"}' > "$MOCK_TRANSCRIPT"
 
 SESSION_HASH=$(md5sum "$MOCK_TRANSCRIPT" 2>/dev/null | cut -c1-8 || echo "test")
-rm -f "/tmp/allay-drift-${SESSION_HASH}.jsonl" "/tmp/allay-drift-cooldown-${SESSION_HASH}"
+rm -f "/tmp/fae-drift-${SESSION_HASH}.jsonl" "/tmp/fae-drift-cooldown-${SESSION_HASH}"
 
 # Trigger a drift alert (3 reads) to generate a metric
 INPUT=$(jq -n \
@@ -33,7 +33,7 @@ done
 if [[ ! -f "${STATE_DIR}/metrics.jsonl" ]]; then
   echo "FAIL: metrics.jsonl should be created after drift detection"
   rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT"
-  rm -f "/tmp/allay-drift-${SESSION_HASH}.jsonl" "/tmp/allay-drift-cooldown-${SESSION_HASH}"
+  rm -f "/tmp/fae-drift-${SESSION_HASH}.jsonl" "/tmp/fae-drift-cooldown-${SESSION_HASH}"
   exit 1
 fi
 
@@ -42,7 +42,7 @@ while IFS= read -r line; do
   if ! printf "%s" "$line" | jq empty 2>/dev/null; then
     echo "FAIL: Invalid JSON in metrics.jsonl: $line"
     rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT"
-    rm -f "/tmp/allay-drift-${SESSION_HASH}.jsonl" "/tmp/allay-drift-cooldown-${SESSION_HASH}"
+    rm -f "/tmp/fae-drift-${SESSION_HASH}.jsonl" "/tmp/fae-drift-cooldown-${SESSION_HASH}"
     exit 1
   fi
 done < "${STATE_DIR}/metrics.jsonl"
@@ -51,7 +51,7 @@ done < "${STATE_DIR}/metrics.jsonl"
 if ! grep -q "drift_detected" "${STATE_DIR}/metrics.jsonl"; then
   echo "FAIL: metrics.jsonl should contain drift_detected event"
   rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT"
-  rm -f "/tmp/allay-drift-${SESSION_HASH}.jsonl" "/tmp/allay-drift-cooldown-${SESSION_HASH}"
+  rm -f "/tmp/fae-drift-${SESSION_HASH}.jsonl" "/tmp/fae-drift-cooldown-${SESSION_HASH}"
   exit 1
 fi
 
@@ -59,13 +59,13 @@ fi
 if ! grep "drift_detected" "${STATE_DIR}/metrics.jsonl" | jq -e '.pattern' >/dev/null 2>&1; then
   echo "FAIL: drift_detected event should have pattern field"
   rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT"
-  rm -f "/tmp/allay-drift-${SESSION_HASH}.jsonl" "/tmp/allay-drift-cooldown-${SESSION_HASH}"
+  rm -f "/tmp/fae-drift-${SESSION_HASH}.jsonl" "/tmp/fae-drift-cooldown-${SESSION_HASH}"
   exit 1
 fi
 
 # Cleanup
 rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT"
-rm -f "/tmp/allay-drift-${SESSION_HASH}.jsonl" "/tmp/allay-drift-cooldown-${SESSION_HASH}"
+rm -f "/tmp/fae-drift-${SESSION_HASH}.jsonl" "/tmp/fae-drift-cooldown-${SESSION_HASH}"
 rm -f "${STATE_DIR}/metrics.jsonl"
 rm -rf "${STATE_DIR}/metrics.jsonl.lock"
 

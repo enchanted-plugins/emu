@@ -1,4 +1,4 @@
-# Allay
+# Emu
 
 <p>
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-3fb950?style=for-the-badge"></a>
@@ -15,14 +15,14 @@ The context health platform that learns what wastes your tokens — and stops it
 
 **3 plugins. 9 algorithms. 4 agents. Honest numbers.**
 
-> 40 minutes into a session, Allay told me Claude had been editing and reverting
+> 40 minutes into a session, Emu told me Claude had been editing and reverting
 > the same file for 12 minutes. I didn't notice. It did.
 
 ---
 
 ## Origin
 
-Allay takes its name from the **allay mob in Minecraft** — a small winged creature that follows you, collects items matching what you show it, and drops the rest. Allay does the same with your session: keeps the signal, drops the duplicates, stops the runaway loops.
+**Emu** takes its name from **Alex's Mobs** — a flightless bird that stands tall on the open plain and uses its long-range vision to spot threats on the horizon long before they arrive. Emu watches your session the same way: eyes on the token flow, flagging the runway edge before you hit it.
 
 The question this plugin answers: *What did I spend?*
 
@@ -30,24 +30,24 @@ The question this plugin answers: *What did I spend?*
 
 - Developers who've watched a session burn through context on re-reads, revert loops, or verbose tool output — and want an objective readout instead of a gut feeling.
 - Teams that need honest numbers (runway with a ±CI, drift with a specific pattern) for retrospectives, not a marketing dashboard.
-- Privacy-conscious users — everything Allay observes stays local; there is no outbound network code (see [PRIVACY.md](PRIVACY.md)).
+- Privacy-conscious users — everything Emu observes stays local; there is no outbound network code (see [PRIVACY.md](PRIVACY.md)).
 
 Not for:
 
-- Centralized-observability teams who need a cloud dashboard — Allay is machine-local by design.
-- Sessions where context burn is obviously the smaller problem than code correctness — reach for Hornet or Mantis first, then Allay.
+- Centralized-observability teams who need a cloud dashboard — Emu is machine-local by design.
+- Sessions where context burn is obviously the smaller problem than code correctness — reach for Raven or Lich first, then Emu.
 
 ## Contents
 
 - [How It Works](#how-it-works)
-- [What Makes Allay Different](#what-makes-allay-different)
+- [What Makes Emu Different](#what-makes-fae-different)
 - [The Full Lifecycle](#the-full-lifecycle)
 - [Install](#install)
 - [Quickstart](#quickstart)
 - [3 Plugins, 4 Agents, 9 Algorithms](#3-plugins-4-agents-9-algorithms)
 - [What You Get Per Session](#what-you-get-per-session)
 - [Roadmap](#roadmap)
-- [The Science Behind Allay](#the-science-behind-allay)
+- [The Science Behind Emu](#the-science-behind-fae)
 - [Commands](#commands)
 - [Compression Rules (15)](#compression-rules-15)
 - [vs Everything Else](#vs-everything-else)
@@ -61,12 +61,12 @@ Not for:
 
 ## How It Works
 
-Allay splits into three plugins that each own one lifecycle phase. **token-saver** fires on `PreToolUse` to compress verbose Bash output (A3), block duplicate file reads (A5), and return deltas on changed re-reads (A6). **context-guard** fires on `PostToolUse` to forecast runway (A2) and detect drift patterns (A1). **state-keeper** fires on `PreCompact` to write an atomic checkpoint (A4). Across sessions, A7 accumulates per-strategy success rates. The diagram below shows this flow.
+Emu splits into three plugins that each own one lifecycle phase. **token-saver** fires on `PreToolUse` to compress verbose Bash output (A3), block duplicate file reads (A5), and return deltas on changed re-reads (A6). **context-guard** fires on `PostToolUse` to forecast runway (A2) and detect drift patterns (A1). **state-keeper** fires on `PreCompact` to write an atomic checkpoint (A4). Across sessions, A7 accumulates per-strategy success rates. The diagram below shows this flow.
 
 <p align="center">
   <a href="docs/assets/pipeline.mmd" title="View hook-binding diagram source (Mermaid)">
     <img src="docs/assets/pipeline.svg"
-         alt="Allay hook bindings: Claude Code tool calls fan out into token-saver (PreToolUse · A3/A5/A6), context-guard (PostToolUse · A1/A2), state-keeper (PreCompact · A4); drift/metric events feed A7 Bayesian cross-session accumulation"
+         alt="Emu hook bindings: Claude Code tool calls fan out into token-saver (PreToolUse · A3/A5/A6), context-guard (PostToolUse · A1/A2), state-keeper (PreCompact · A4); drift/metric events feed A7 Bayesian cross-session accumulation"
          width="100%" style="max-width:1100px;">
   </a>
 </p>
@@ -79,7 +79,7 @@ Source: [docs/assets/pipeline.mmd](docs/assets/pipeline.mmd) · Regeneration com
 
 Three plugins. Three lifecycle phases. No overlap. No dependencies between plugins.
 
-## What Makes Allay Different
+## What Makes Emu Different
 
 ### Drift Alert
 
@@ -88,7 +88,7 @@ Catches Claude spinning in circles — in real time, not after the fact:
 ```
 ⚠️ Drift Alert: src/auth.ts read 4× without changes.
 Claude may be stuck re-reading without progress.
-→ Reframe the problem or /allay:checkpoint before /compact.
+→ Reframe the problem or /fae:checkpoint before /compact.
 ```
 
 Three patterns: **read loops**, **edit-revert cycles**, **test fail loops**.
@@ -126,18 +126,18 @@ Four levels: off / lite / full / ultra. Code stays verbose — only prose gets l
 
 ### Delta Mode
 
-Re-reading a changed file? Allay shows only what changed instead of the full file.
+Re-reading a changed file? Emu shows only what changed instead of the full file.
 Re-reading an unchanged file? Blocked — with a preview and elapsed time.
 
 ### Self-Learning
 
-Allay accumulates strategy success rates across sessions. After each report,
+Emu accumulates strategy success rates across sessions. After each report,
 it logs which compression rules fired, which drift patterns recurred, and which
 interventions worked — then adjusts its internal model via exponential moving average.
 
 ### The Receipt
 
-`/allay:report` shows exact savings per feature, drift alerts fired, turns
+`/fae:report` shows exact savings per feature, drift alerts fired, turns
 remaining, and accumulated learnings. Conservative methodology. We don't inflate numbers.
 
 ## The Full Lifecycle
@@ -147,7 +147,7 @@ Every turn cycles through the same path. Tool calls hit `PreToolUse` (token-save
 <p align="center">
   <a href="docs/assets/lifecycle.mmd" title="View session-lifecycle diagram source (Mermaid)">
     <img src="docs/assets/lifecycle.svg"
-         alt="Allay session lifecycle: session start, turn N tool call, PreToolUse (token-saver) compresses, tool executes, PostToolUse (context-guard) detects drift / forecasts runway, loop continues until C(t) ≥ C_max triggers compaction; PreCompact (state-keeper) writes checkpoint.md; context wiped; restorer agent reads checkpoint; session continues"
+         alt="Emu session lifecycle: session start, turn N tool call, PreToolUse (token-saver) compresses, tool executes, PostToolUse (context-guard) detects drift / forecasts runway, loop continues until C(t) ≥ C_max triggers compaction; PreCompact (state-keeper) writes checkpoint.md; context wiped; restorer agent reads checkpoint; session continues"
          width="100%" style="max-width:1100px;">
   </a>
 </p>
@@ -162,44 +162,44 @@ Every tool call flows through the same pipeline. When context fills up, state-ke
 
 ## Install
 
-Allay ships as 3 plugins cooperating across PreToolUse / PostToolUse / PreCompact. One meta-plugin — `full` — lists all three as dependencies, so a single install pulls in the whole platform.
+Emu ships as 3 plugins cooperating across PreToolUse / PostToolUse / PreCompact. One meta-plugin — `full` — lists all three as dependencies, so a single install pulls in the whole platform.
 
 **In Claude Code** (recommended):
 
 ```
-/plugin marketplace add enchanted-plugins/allay
-/plugin install full@allay
+/plugin marketplace add enchanted-plugins/fae
+/plugin install full@fae
 ```
 
 Claude Code resolves the dependency list and installs all 3 plugins. Verify with `/plugin list`.
 
-**Want to cherry-pick?** Individual plugins are still installable by name — e.g. `/plugin install allay-context-guard@allay` if you only want the drift/runway dashboard. The three lifecycle phases are designed to cooperate, though, so `full@allay` is the path we recommend.
+**Want to cherry-pick?** Individual plugins are still installable by name — e.g. `/plugin install fae-context-guard@fae` if you only want the drift/runway dashboard. The three lifecycle phases are designed to cooperate, though, so `full@fae` is the path we recommend.
 
 **Via shell** (also installs `shared/*.sh` locally so hooks work offline):
 
 ```bash
-bash <(curl -s https://raw.githubusercontent.com/enchanted-plugins/allay/main/install.sh)
+bash <(curl -s https://raw.githubusercontent.com/enchanted-plugins/fae/main/install.sh)
 ```
 
 ## Quickstart
 
-Install, then run Allay's self-check, then get a runway readout. Sixty seconds:
+Install, then run Emu's self-check, then get a runway readout. Sixty seconds:
 
 ```
-/plugin install full@allay
-/allay:doctor
-/allay:report
+/plugin install full@fae
+/fae:doctor
+/fae:report
 ```
 
-Expected: `/allay:doctor` confirms hooks registered, jq available, state dirs writable. `/allay:report` prints a session dashboard — token runway (`~N turns remaining`), per-tool token breakdown, any drift alerts fired. No config required; defaults are honest. See [docs/getting-started.md](docs/getting-started.md) for the full guided first run.
+Expected: `/fae:doctor` confirms hooks registered, jq available, state dirs writable. `/fae:report` prints a session dashboard — token runway (`~N turns remaining`), per-tool token breakdown, any drift alerts fired. No config required; defaults are honest. See [docs/getting-started.md](docs/getting-started.md) for the full guided first run.
 
 ## 3 Plugins, 4 Agents, 9 Algorithms
 
 | Plugin | Hook | Command | Algorithms |
 |--------|------|---------|------------|
-| state-keeper | PreCompact | `/allay:checkpoint` | A4 |
+| state-keeper | PreCompact | `/fae:checkpoint` | A4 |
 | token-saver | PreToolUse + PostToolUse | — | A3, A5, A6 |
-| context-guard | PostToolUse | `/allay:report` | A1, A2, A8 |
+| context-guard | PostToolUse | `/fae:report` | A1, A2, A8 |
 | shared | — | — | A7, A9 |
 
 | Agent | Model | Plugin | What |
@@ -211,12 +211,12 @@ Expected: `/allay:doctor` confirms hooks registered, jq available, state dirs wr
 
 ## What You Get Per Session
 
-Tool calls write events to three plugin state directories. `token-saver/state/metrics.jsonl` records compressions, dedup blocks, and delta reads. `context-guard/state/metrics.jsonl` records per-turn token estimates and drift detections; `learnings.json` accumulates cross-session strategy rates (A7). `state-keeper/state/` holds the latest `checkpoint.md`, any user-flagged `remember.md`, and checkpoint events. `/allay:report` reads all three plugins to produce the session dashboard.
+Tool calls write events to three plugin state directories. `token-saver/state/metrics.jsonl` records compressions, dedup blocks, and delta reads. `context-guard/state/metrics.jsonl` records per-turn token estimates and drift detections; `learnings.json` accumulates cross-session strategy rates (A7). `state-keeper/state/` holds the latest `checkpoint.md`, any user-flagged `remember.md`, and checkpoint events. `/fae:report` reads all three plugins to produce the session dashboard.
 
 <p align="center">
   <a href="docs/assets/state-flow.mmd" title="View state-flow diagram source (Mermaid)">
     <img src="docs/assets/state-flow.svg"
-         alt="Allay per-session state flow: tool calls (Bash, Read, Write, Glob/Grep) append events to three JSONL journals (token-saver, context-guard, state-keeper), which are merged by /allay:report into a session dashboard; A7 learnings accumulate across sessions in learnings.json"
+         alt="Emu per-session state flow: tool calls (Bash, Read, Write, Glob/Grep) append events to three JSONL journals (token-saver, context-guard, state-keeper), which are merged by /fae:report into a session dashboard; A7 learnings accumulate across sessions in learnings.json"
          width="100%" style="max-width:1100px;">
   </a>
 </p>
@@ -230,7 +230,7 @@ Source: [docs/assets/state-flow.mmd](docs/assets/state-flow.mmd) · Regeneration
 ```
 state-keeper/state/
 ├── checkpoint.md        # Pre-compaction snapshot (branch, files, instructions)
-├── remember.md          # User-flagged context (/allay:checkpoint items)
+├── remember.md          # User-flagged context (/fae:checkpoint items)
 └── metrics.jsonl        # checkpoint_saved events
 
 token-saver/state/
@@ -242,18 +242,18 @@ context-guard/state/
 ├── active-skills.json   # A8 — live scope stack (invocation-id keyed)
 └── .session             # A9 — per-worktree session id (gitignored)
 
-$XDG_STATE_HOME/allay/<repo_id>/       # A9 — cross-worktree global
+$XDG_STATE_HOME/fae/<repo_id>/       # A9 — cross-worktree global
 └── skill-metrics-global.<pid>.jsonl   # per-PID shard; readers glob + merge
 
-$XDG_DATA_HOME/allay/<repo_id>/        # A9 — long-lived learnings
+$XDG_DATA_HOME/fae/<repo_id>/        # A9 — long-lived learnings
 └── learnings.json                     # A7 strategy rates; migrated from local
 ```
 
 ## Roadmap
 
-Tracked in [docs/ROADMAP.md](docs/ROADMAP.md) and the shared [ecosystem map](https://github.com/enchanted-plugins/flux/blob/main/docs/ecosystem.md). For upcoming work specific to Allay, see issues tagged [roadmap](https://github.com/enchanted-plugins/allay/labels/roadmap).
+Tracked in [docs/ROADMAP.md](docs/ROADMAP.md) and the shared [ecosystem map](https://github.com/enchanted-plugins/wixie/blob/main/docs/ecosystem.md). For upcoming work specific to Emu, see issues tagged [roadmap](https://github.com/enchanted-plugins/fae/labels/roadmap).
 
-## The Science Behind Allay
+## The Science Behind Emu
 
 Nine named algorithms. Each one referenced in code, agents, and reports.
 
@@ -267,7 +267,7 @@ Transitions on tool name + file hash + exit code.
 
 <p align="center"><img src="docs/assets/math/a1-drift.svg" alt="P(drift | s1, ..., sn) = 1 if count of repeated states >= theta; else 0"></p>
 
-Where θ = 3 (configurable via `ALLAY_DRIFT_READ_THRESHOLD`).
+Where θ = 3 (configurable via `FAE_DRIFT_READ_THRESHOLD`).
 
 ### A2. Linear Runway Forecasting
 
@@ -329,12 +329,12 @@ has correct parent/child lineage on every event.
 <p align="center"><img src="docs/assets/math/a8-attribution.svg" alt="attr(c) = top-of-stack skill if any alive and within TTL; otherwise 'manual'"></p>
 
 Where $S$ is the stack of active skills (LIFO), $s_{\text{top}}$ is the most
-recent, and $\text{TTL} = 3600\text{s}$ (configurable via `ALLAY_SKILL_TTL`).
+recent, and $\text{TTL} = 3600\text{s}$ (configurable via `FAE_SKILL_TTL`).
 Scopes are keyed by 16-hex-char invocation ids — not PIDs — so entries survive
 PID reuse (systemd `InvocationID` pattern). Eviction on every read: stale
 entries (dead PID or expired TTL) are purged before the "current" scope is returned.
 
-Emitted as `skill-metrics.jsonl` alongside `metrics.jsonl`. `/allay:analytics`
+Emitted as `skill-metrics.jsonl` alongside `metrics.jsonl`. `/fae:analytics`
 surfaces the per-skill breakdown.
 
 ### A9. Worktree Session Graph
@@ -346,18 +346,18 @@ are unified into one view by the root-commit hash:
 
 The root commit is stable across clones, forks, renames, and worktree paths —
 basename-of-toplevel is not. Cross-worktree events land in
-`$XDG\_STATE\_HOME/allay/\langle repo\_id\rangle/`, sharded per-PID
+`$XDG\_STATE\_HOME/fae/\langle repo\_id\rangle/`, sharded per-PID
 (`skill-metrics-global.\langle pid\rangle.jsonl`) to avoid concurrent-append
 interleaving on filesystems without atomicity guarantees (Windows, NFS).
 Readers glob all shards and merge by `ts`:
 
 <p align="center"><img src="docs/assets/math/a9-unified.svg" alt="unified_session = union of shards across all worktrees of the repo_id"></p>
 
-`/allay:report` renders a WORKTREE OVERVIEW section when ≥ 2 worktrees have
-written. `/allay:report --global` forces the unified view across every session
+`/fae:report` renders a WORKTREE OVERVIEW section when ≥ 2 worktrees have
+written. `/fae:report --global` forces the unified view across every session
 recorded in the global dir.
 
-Learnings (A7) also migrate to `$XDG_DATA_HOME/allay/<repo_id>/learnings.json` —
+Learnings (A7) also migrate to `$XDG_DATA_HOME/fae/<repo_id>/learnings.json` —
 the data dir per XDG spec — so cross-session accumulation survives cache wipes
 and spans every worktree without symlinks.
 
@@ -365,12 +365,12 @@ and spans every worktree without symlinks.
 
 | Command | Plugin | What |
 |---------|--------|------|
-| `/allay:report` | context-guard | Full session dashboard. `--global` for unified cross-worktree view (A9). |
-| `/allay:runway` | context-guard | Quick turns-until-compaction check |
-| `/allay:analytics` | context-guard | Per-tool + per-skill token breakdown (A8) |
-| `/allay:doctor` | context-guard | Diagnostic self-check for all plugins |
-| `/allay:checkpoint [text]` | state-keeper | Save context that survives compaction |
-| `/allay:checkpoint-show` | state-keeper | Display most recent automatic checkpoint |
+| `/fae:report` | context-guard | Full session dashboard. `--global` for unified cross-worktree view (A9). |
+| `/fae:runway` | context-guard | Quick turns-until-compaction check |
+| `/fae:analytics` | context-guard | Per-tool + per-skill token breakdown (A8) |
+| `/fae:doctor` | context-guard | Diagnostic self-check for all plugins |
+| `/fae:checkpoint [text]` | state-keeper | Save context that survives compaction |
+| `/fae:checkpoint-show` | state-keeper | Display most recent automatic checkpoint |
 
 ## Compression Rules (15)
 
@@ -396,17 +396,17 @@ Bypass: prefix with `FULL:` to skip compression.
 
 ## vs Everything Else
 
-| | Allay | Caveman | Cozempic | context-mode | token-optimizer |
+| | Emu | Caveman | Cozempic | context-mode | token-optimizer |
 |---|---|---|---|---|---|
 | Drift detection | real-time, 3 patterns | — | — | — | — |
 | Turn forecast | Runway + 95% CI | — | threshold only | — | — |
 | Output reduction | 4 modes | 65% prose cut | — | — | — |
 | Input compression | 15 rules | — | 18 strategies | — | — |
 | Delta mode | diff on re-read | — | — | — | delta mode |
-| Per-skill + per-tool analytics | /allay:analytics (A8) | — | — | per-tool only | waste dashboard |
-| Cross-worktree unified view | /allay:report --global (A9) | — | — | — | — |
+| Per-skill + per-tool analytics | /fae:analytics (A8) | — | — | per-tool only | waste dashboard |
+| Cross-worktree unified view | /fae:report --global (A9) | — | — | — | — |
 | Tool result aging | age-based alerts | — | 3-tier stubbing | — | — |
-| Savings proof | /allay:report | — | session report | ctx_stats | quality score |
+| Savings proof | /fae:report | — | session report | ctx_stats | quality score |
 | Compaction survival | checkpoint.md | — | team state | SQLite | checkpoints |
 | Self-learning | learnings.json | — | — | — | — |
 | Agents | 4 (Haiku) | — | — | — | — |
@@ -417,7 +417,7 @@ Plus the only tool that catches Claude going in circles — and learns from it.
 
 ## Agent Conduct (9 Modules)
 
-Every skill inherits a reusable behavioral contract from [shared/](shared/) — loaded once into [CLAUDE.md](CLAUDE.md), applied across all plugins. This is how Claude *acts* inside Allay: deterministic, surgical, verifiable. Not a suggestion; a contract.
+Every skill inherits a reusable behavioral contract from [shared/](shared/) — loaded once into [CLAUDE.md](CLAUDE.md), applied across all plugins. This is how Claude *acts* inside Emu: deterministic, surgical, verifiable. Not a suggestion; a contract.
 
 | Module | What it governs |
 |--------|-----------------|
@@ -439,7 +439,7 @@ Full interactive architecture explorer with 4 tabbed diagrams and plugin compone
 
 ## Acknowledgments
 
-Allay builds on foundations laid by others:
+Emu builds on foundations laid by others:
 
 - **[Claude Code](https://github.com/anthropics/claude-code)** (Anthropic) — the plugin surface this work extends.
 - **[Keep a Changelog](https://keepachangelog.com/)** — CHANGELOG convention.
@@ -451,7 +451,7 @@ Allay builds on foundations laid by others:
 
 ## Versioning & release cadence
 
-Allay follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Breaking changes land on major bumps only; the [CHANGELOG](CHANGELOG.md) flags them explicitly. Release cadence is opportunistic — tags land when accumulated fixes or features justify a cut, not on a fixed schedule. Migration notes between majors live in [docs/upgrading.md](docs/upgrading.md).
+Emu follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Breaking changes land on major bumps only; the [CHANGELOG](CHANGELOG.md) flags them explicitly. Release cadence is opportunistic — tags land when accumulated fixes or features justify a cut, not on a fixed schedule. Migration notes between majors live in [docs/upgrading.md](docs/upgrading.md).
 
 ## Contributing
 
@@ -462,11 +462,11 @@ See [CONTRIBUTING.md](CONTRIBUTING.md)
 If you use this project in research or derivative work, please cite it:
 
 ```bibtex
-@software{allay_2026,
-  title = {Allay},
+@software{fae_2026,
+  title = {Emu},
   author = {{Klaiderman}},
   year = {2026},
-  url = {https://github.com/enchanted-plugins/allay}
+  url = {https://github.com/enchanted-plugins/fae}
 }
 ```
 
@@ -480,8 +480,8 @@ MIT
 
 ## Role in the ecosystem
 
-Allay is the **session-health layer** — it watches the token economy of every Claude Code session. Upstream, Flux's prompts arrive through the conversation and Allay measures them; tool-call output flows through the same observation path. Downstream, Nook reads Allay's per-turn token accounting and attributes it across plugin × sub-plugin × agent tier × model for forecast and budget purposes.
+Emu is the **session-health layer** — it watches the token economy of every Claude Code session. Upstream, Wixie's prompts arrive through the conversation and Emu measures them; tool-call output flows through the same observation path. Downstream, Pech reads Emu's per-turn token accounting and attributes it across plugin × sub-plugin × agent tier × model for forecast and budget purposes.
 
-Allay does not engineer prompts (Flux's lane), score change trust (Hornet's lane), review code correctness (Mantis's lane), enforce budget gates via kill-switches (Nook uses cooperative degradation, not pre-emption), or scan security surfaces (Reaper's lane). It observes token burn and keeps the session recoverable across compaction.
+Emu does not engineer prompts (Wixie's lane), score change trust (Raven's lane), review code correctness (Lich's lane), enforce budget gates via kill-switches (Pech uses cooperative degradation, not pre-emption), or scan security surfaces (Hydra's lane). It observes token burn and keeps the session recoverable across compaction.
 
-See [../flux/docs/ecosystem.md § Data Flow Between Plugins](../flux/docs/ecosystem.md#data-flow-between-plugins) for the full map.
+See [../wixie/docs/ecosystem.md § Data Flow Between Plugins](../wixie/docs/ecosystem.md#data-flow-between-plugins) for the full map.

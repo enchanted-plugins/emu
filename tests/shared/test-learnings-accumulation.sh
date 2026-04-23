@@ -13,7 +13,7 @@ mkdir -p "${TMP_DIR}/token-saver/state"
 mkdir -p "${TMP_DIR}/state-keeper/state"
 
 # A9: learnings.sh now prefers the XDG global dir. Isolate it to a temp path
-# so the test doesn't touch the developer's real ~/.local/share/allay/.
+# so the test doesn't touch the developer's real ~/.local/share/fae/.
 FAKE_XDG=$(mktemp -d)
 export XDG_DATA_HOME="$FAKE_XDG"
 

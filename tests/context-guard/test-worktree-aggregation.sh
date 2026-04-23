@@ -2,8 +2,8 @@
 # Test: A9 — global skill-metrics-global.*.jsonl contains entries from
 # multiple worktrees, keyed on the same repo_id.
 #
-# Simulates two worktrees of the same repo by overriding ALLAY_INIT_CWD +
-# ALLAY_WORKTREE_REL via direct env exports into the hook. Verifies the global
+# Simulates two worktrees of the same repo by overriding FAE_INIT_CWD +
+# FAE_WORKTREE_REL via direct env exports into the hook. Verifies the global
 # dir receives rows from both worktree identities and groups correctly by repo_id.
 set -euo pipefail
 
@@ -22,7 +22,7 @@ cleanup() {
   rm -rf "${STATE_DIR}/metrics.jsonl.lock" "${STATE_DIR}/skill-metrics.jsonl.lock" 2>/dev/null || true
   [[ -n "${TF:-}" ]] && rm -f "$TF"
   [[ -n "${MT:-}" ]] && rm -f "$MT"
-  [[ -n "${SH:-}" ]] && rm -f "/tmp/allay-drift-${SH}.jsonl" "/tmp/allay-drift-cooldown-${SH}"
+  [[ -n "${SH:-}" ]] && rm -f "/tmp/fae-drift-${SH}.jsonl" "/tmp/fae-drift-cooldown-${SH}"
 }
 trap cleanup EXIT
 
@@ -38,37 +38,37 @@ INPUT=$(jq -n --arg t "$MT" --arg f "$TF" '{transcript_path:$t, cwd:"/tmp", tool
 # ── Fire from "main" worktree ──
 printf "%s" "$INPUT" | \
   CLAUDE_PLUGIN_ROOT="${REPO_ROOT}/plugins/context-guard" \
-  ALLAY_REPO_ID="deadbeef1234" \
-  ALLAY_WORKTREE_PATH="/repo/main" \
-  ALLAY_WORKTREE_REL="." \
-  ALLAY_MAIN_WORKTREE="/repo/main" \
-  ALLAY_IS_WORKTREE="0" \
-  ALLAY_SESSION_ID="sessmain0000" \
-  ALLAY_GLOBAL_STATE_DIR="${FAKE_XDG}/allay/deadbeef1234" \
+  FAE_REPO_ID="deadbeef1234" \
+  FAE_WORKTREE_PATH="/repo/main" \
+  FAE_WORKTREE_REL="." \
+  FAE_MAIN_WORKTREE="/repo/main" \
+  FAE_IS_WORKTREE="0" \
+  FAE_SESSION_ID="sessmain0000" \
+  FAE_GLOBAL_STATE_DIR="${FAKE_XDG}/fae/deadbeef1234" \
   bash "$HOOK" >/dev/null 2>/dev/null || true
 
 # ── Fire from "worktree" (apps/sigil) ──
 # Reset the drift cache so the cooldown doesn't eat this call.
-rm -f "/tmp/allay-drift-${SH}.jsonl" "/tmp/allay-drift-cooldown-${SH}"
+rm -f "/tmp/fae-drift-${SH}.jsonl" "/tmp/fae-drift-cooldown-${SH}"
 # Use a different transcript so SESSION_HASH differs and turn 1 resets.
 MT2=$(mktemp); echo '{"role":"user","content":"wt2"}' > "$MT2"
 INPUT2=$(jq -n --arg t "$MT2" --arg f "$TF" '{transcript_path:$t, cwd:"/tmp", tool_name:"Read", tool_input:{file_path:$f}, tool_result:{content:"x"}, hook_event_name:"PostToolUse"}')
 
 printf "%s" "$INPUT2" | \
   CLAUDE_PLUGIN_ROOT="${REPO_ROOT}/plugins/context-guard" \
-  ALLAY_REPO_ID="deadbeef1234" \
-  ALLAY_WORKTREE_PATH="/repo/worktrees/sigil" \
-  ALLAY_WORKTREE_REL="apps/sigil" \
-  ALLAY_MAIN_WORKTREE="/repo/main" \
-  ALLAY_IS_WORKTREE="1" \
-  ALLAY_SESSION_ID="sessworktree" \
-  ALLAY_GLOBAL_STATE_DIR="${FAKE_XDG}/allay/deadbeef1234" \
+  FAE_REPO_ID="deadbeef1234" \
+  FAE_WORKTREE_PATH="/repo/worktrees/sigil" \
+  FAE_WORKTREE_REL="apps/sigil" \
+  FAE_MAIN_WORKTREE="/repo/main" \
+  FAE_IS_WORKTREE="1" \
+  FAE_SESSION_ID="sessworktree" \
+  FAE_GLOBAL_STATE_DIR="${FAKE_XDG}/fae/deadbeef1234" \
   bash "$HOOK" >/dev/null 2>/dev/null || true
 
 rm -f "$MT2"
 
 # ── Verify global dir has rows from BOTH worktrees ──
-GLOBAL_DIR="${FAKE_XDG}/allay/deadbeef1234"
+GLOBAL_DIR="${FAKE_XDG}/fae/deadbeef1234"
 if [[ ! -d "$GLOBAL_DIR" ]]; then
   echo "FAIL: global state dir not created: $GLOBAL_DIR"
   exit 1

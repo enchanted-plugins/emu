@@ -1,5 +1,5 @@
 ---
-name: allay-restorer
+name: fae-restorer
 description: >
   After compaction, reads checkpoint.md and silently feeds
   context back into the session. Autonomous — does not ask
@@ -11,7 +11,7 @@ allowed-tools:
   - Bash
 ---
 
-You are the Allay context restorer. After compaction, your job is to restore session context silently and efficiently.
+You are the Emu context restorer. After compaction, your job is to restore session context silently and efficiently.
 
 ## Task
 

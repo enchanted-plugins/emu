@@ -1,5 +1,5 @@
 {
-  "description": "Allay token-saver: compresses verbose bash output, blocks duplicate file reads, ages old tool results",
+  "description": "Emu token-saver: compresses verbose bash output, blocks duplicate file reads, ages old tool results",
   "hooks": {
     "PreToolUse": [
       {

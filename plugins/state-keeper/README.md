@@ -4,14 +4,14 @@
 
 ## Install
 
-Part of the [Allay](../..) bundle. The simplest install is the `full` meta-plugin, which pulls in all 3 Allay plugins via dependency resolution:
+Part of the [Emu](../..) bundle. The simplest install is the `full` meta-plugin, which pulls in all 3 Emu plugins via dependency resolution:
 
 ```
-/plugin marketplace add enchanted-plugins/allay
-/plugin install full@allay
+/plugin marketplace add enchanted-plugins/fae
+/plugin install full@fae
 ```
 
-To install this plugin on its own: `/plugin install allay-state-keeper@allay`. `state-keeper` writes checkpoints that `context-guard`'s runway forecast reads to recalibrate after compaction, and `token-saver`'s compression extends the turns before compaction fires in the first place — so on its own checkpoints go unread and compactions fire more often.
+To install this plugin on its own: `/plugin install fae-state-keeper@fae`. `state-keeper` writes checkpoints that `context-guard`'s runway forecast reads to recalibrate after compaction, and `token-saver`'s compression extends the turns before compaction fires in the first place — so on its own checkpoints go unread and compactions fire more often.
 
 ## Components
 
@@ -19,8 +19,8 @@ To install this plugin on its own: `/plugin install allay-state-keeper@allay`. `
 |------|------|-------------|
 | Hook | save-checkpoint.sh | Writes checkpoint.md before compaction wipes context |
 | Skill | state-recovery | Restores context after compaction |
-| Command | /allay:checkpoint | Save/view user-flagged context |
-| Command | /allay:checkpoint-show | Display most recent automatic checkpoint |
+| Command | /fae:checkpoint | Save/view user-flagged context |
+| Command | /fae:checkpoint-show | Display most recent automatic checkpoint |
 | Agent | restorer | Autonomous context restoration (Haiku, forked) |
 
 ## Architecture
@@ -67,9 +67,9 @@ The checkpoint still captures user-flagged context and project instructions.
 
 ## Commands
 
-- `/allay:checkpoint <text>` — Append text to `state/remember.md` with timestamp. Survives compaction.
-- `/allay:checkpoint` — Display all saved items.
-- `/allay:checkpoint-show` — Display the most recent automatic checkpoint with age.
+- `/fae:checkpoint <text>` — Append text to `state/remember.md` with timestamp. Survives compaction.
+- `/fae:checkpoint` — Display all saved items.
+- `/fae:checkpoint-show` — Display the most recent automatic checkpoint with age.
 
 ## Behavioral modules
 

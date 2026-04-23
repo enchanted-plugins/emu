@@ -1,5 +1,5 @@
 {
-  "description": "Allay state-keeper: saves checkpoint before context compaction",
+  "description": "Emu state-keeper: saves checkpoint before context compaction",
   "hooks": {
     "PreCompact": [
       {

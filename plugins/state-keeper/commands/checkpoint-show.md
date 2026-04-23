@@ -1,9 +1,9 @@
 ---
-name: allay:checkpoint-show
+name: fae:checkpoint-show
 description: Display the most recent automatic checkpoint saved before compaction.
 ---
 
-When the user runs `/allay:checkpoint-show`:
+When the user runs `/fae:checkpoint-show`:
 
 1. Check if `${CLAUDE_PLUGIN_ROOT}/state/checkpoint.md` exists.
 2. If it exists:

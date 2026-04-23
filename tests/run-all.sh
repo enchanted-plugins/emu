@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Allay test runner — runs all test scripts, reports pass/fail.
+# Emu test runner — runs all test scripts, reports pass/fail.
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -31,7 +31,7 @@ run_test() {
 }
 
 echo "══════════════════════════════════════"
-echo " ALLAY TEST SUITE"
+echo " FAE TEST SUITE"
 echo "══════════════════════════════════════"
 echo ""
 

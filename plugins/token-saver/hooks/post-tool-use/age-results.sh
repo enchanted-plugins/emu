@@ -45,7 +45,7 @@ fi
 SESSION_HASH=$(md5sum "${HOOK_TRANSCRIPT_PATH}" 2>/dev/null | cut -c1-8 || echo "fallback-$$")
 
 # ── Call counter file ──
-COUNTER_FILE="/tmp/allay-age-${SESSION_HASH}.count"
+COUNTER_FILE="/tmp/fae-age-${SESSION_HASH}.count"
 touch "$COUNTER_FILE" 2>/dev/null || exit 0
 
 # Increment call count
@@ -74,7 +74,7 @@ fi
 if [[ "$CALL_NUM" -gt 30 ]]; then
   RESULT_LINES=$(printf "%s" "$TOOL_RESULT" | wc -l | tr -d ' ')
   if [[ "$RESULT_LINES" -gt 10 ]]; then
-    printf "[Allay] Tool result #%d (%s, %d lines) — consider re-reading if needed rather than relying on aged context." \
+    printf "[Emu] Tool result #%d (%s, %d lines) — consider re-reading if needed rather than relying on aged context." \
       "$CALL_NUM" "$TOOL_NAME" "$RESULT_LINES" >&2
 
     # Log aging event

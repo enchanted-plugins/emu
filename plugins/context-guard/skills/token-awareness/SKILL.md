@@ -24,7 +24,7 @@ STEP 3: Estimate remaining capacity (200K context ÷ average = turns remaining).
 STEP 4: remaining ÷ average = turns remaining.
 
 IF turns > 20: say nothing. Continue working.
-IF turns 10-20: mention once, suggest /allay:checkpoint.
+IF turns 10-20: mention once, suggest /fae:checkpoint.
 IF turns < 10: show runway warning.
 IF turns < 3: recommend /compact immediately.
 </runway_assessment>
@@ -32,11 +32,11 @@ IF turns < 3: recommend /compact immediately.
 <runway_format>
 ⚠️ RUNWAY: ~[N] turns remaining
 Velocity: ~[V] tokens/turn
-→ /allay:checkpoint now
+→ /fae:checkpoint now
 </runway_format>
 
 <constraints>
 1. NEVER show runway more than once per 10 turns.
 2. NEVER interrupt active work for non-critical warnings.
-3. ALWAYS offer /allay:checkpoint as concrete next step.
+3. ALWAYS offer /fae:checkpoint as concrete next step.
 </constraints>

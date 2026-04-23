@@ -1,35 +1,35 @@
 {
-  "name": "allay",
+  "name": "fae",
   "owner": {
-    "name": "Allay"
+    "name": "Emu"
   },
   "metadata": {
     "description": "Every token accounted for. Context health platform for Claude Code.",
-    "version": "2.0.0"
+    "version": "3.0.0"
   },
   "plugins": [
     {
       "name": "full",
       "source": "./plugins/full",
-      "description": "Meta-plugin. One install pulls in all 3 Allay plugins via dependency resolution.",
+      "description": "Meta-plugin. One install pulls in all 3 Emu plugins via dependency resolution.",
       "category": "meta"
     },
     {
-      "name": "allay-state-keeper",
+      "name": "fae-state-keeper",
       "source": "./plugins/state-keeper",
       "description": "Preserves Claude Code context across compactions. Writes checkpoint before compaction wipes context. Auto-restores after compaction.",
       "category": "development"
     },
     {
-      "name": "allay-token-saver",
+      "name": "fae-token-saver",
       "source": "./plugins/token-saver",
       "description": "Reduces token usage by compressing verbose tool outputs, blocking duplicate file reads, delta mode for re-reads, and output efficiency instructions.",
       "category": "development"
     },
     {
-      "name": "allay-context-guard",
+      "name": "fae-context-guard",
       "source": "./plugins/context-guard",
-      "description": "The eyes of Allay. Drift Alert catches Claude spinning in circles. Runway forecasts turns until compaction. Analytics shows per-tool token consumption. Report proves exact savings.",
+      "description": "The eyes of Emu. Drift Alert catches Claude spinning in circles. Runway forecasts turns until compaction. Analytics shows per-tool token consumption. Report proves exact savings.",
       "category": "development"
     }
   ]

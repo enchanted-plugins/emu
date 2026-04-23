@@ -18,7 +18,7 @@ echo "content" > "$TEST_FILE"
 # Clean caches
 HASH_A=$(md5sum "$TRANSCRIPT_A" 2>/dev/null | cut -c1-8 || echo "a")
 HASH_B=$(md5sum "$TRANSCRIPT_B" 2>/dev/null | cut -c1-8 || echo "b")
-rm -f "/tmp/allay-reads-${HASH_A}.jsonl" "/tmp/allay-reads-${HASH_B}.jsonl"
+rm -f "/tmp/fae-reads-${HASH_A}.jsonl" "/tmp/fae-reads-${HASH_B}.jsonl"
 
 # Read in session A
 INPUT_A=$(jq -n \
@@ -40,13 +40,13 @@ printf "%s" "$INPUT_B" | CLAUDE_PLUGIN_ROOT="${REPO_ROOT}/plugins/token-saver" b
 if [[ $EXIT_B -ne 0 ]]; then
   echo "FAIL: Different session should not block read, got exit $EXIT_B"
   rm -f "$TRANSCRIPT_A" "$TRANSCRIPT_B" "$TEST_FILE"
-  rm -f "/tmp/allay-reads-${HASH_A}.jsonl" "/tmp/allay-reads-${HASH_B}.jsonl"
+  rm -f "/tmp/fae-reads-${HASH_A}.jsonl" "/tmp/fae-reads-${HASH_B}.jsonl"
   exit 1
 fi
 
 # Cleanup
 rm -f "$TRANSCRIPT_A" "$TRANSCRIPT_B" "$TEST_FILE"
-rm -f "/tmp/allay-reads-${HASH_A}.jsonl" "/tmp/allay-reads-${HASH_B}.jsonl"
+rm -f "/tmp/fae-reads-${HASH_A}.jsonl" "/tmp/fae-reads-${HASH_B}.jsonl"
 rm -f "${REPO_ROOT}/plugins/token-saver/state/metrics.jsonl"
 rm -rf "${REPO_ROOT}/plugins/token-saver/state/metrics.jsonl.lock"
 

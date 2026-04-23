@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Allay session report generator
+# Emu session report generator
 # Generates a text-based session health report.
 # If Python 3 is available, generates a dark-themed PDF report.
-# Not time-critical — called on demand via /allay:report.
+# Not time-critical — called on demand via /fae:report.
 #
 # Usage: bash report-gen.sh <plugins_dir> [output_path]
 #   plugins_dir: path to the plugins/ directory
-#   output_path: optional path for PDF output (default: /tmp/allay-report-<ts>.txt)
+#   output_path: optional path for PDF output (default: /tmp/fae-report-<ts>.txt)
 
 trap 'exit 0' ERR INT TERM
 
@@ -24,7 +24,7 @@ TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 TS_SHORT=$(date -u +"%Y%m%d-%H%M%S")
 
 if [[ -z "$OUTPUT_PATH" ]]; then
-  OUTPUT_PATH="/tmp/allay-report-${TS_SHORT}.txt"
+  OUTPUT_PATH="/tmp/fae-report-${TS_SHORT}.txt"
 fi
 
 # ── Gather metrics from all plugins ──
@@ -105,7 +105,7 @@ fi
 # ── Generate text report ──
 cat > "$OUTPUT_PATH" <<REPORT
 ══════════════════════════════════════
- ALLAY SESSION REPORT
+ FAE SESSION REPORT
  Generated: ${TIMESTAMP}
 ══════════════════════════════════════
 
@@ -136,7 +136,7 @@ cat > "$OUTPUT_PATH" <<REPORT
 
  ── Recommendations ──────────────────
 $(if [[ "$RUNWAY" != "N/A" ]] && [[ "$RUNWAY" -lt 10 ]]; then
-  echo " ⚠ Low runway. Run /allay:checkpoint then /compact."
+  echo " ⚠ Low runway. Run /fae:checkpoint then /compact."
 fi)
 $(if [[ "$DRIFT_ALERTS" -gt 3 ]]; then
   echo " ⚠ High drift count. Consider breaking task into smaller steps."
@@ -155,17 +155,17 @@ fi)
 $(# A9: prefer global XDG learnings, fall back to the legacy per-plugin path.
 LEARNINGS_LOCAL="${PLUGINS_DIR}/context-guard/state/learnings.json"
 (
-  ALLAY_INIT_CWD="$PLUGINS_DIR"
+  FAE_INIT_CWD="$PLUGINS_DIR"
   _si="$(dirname "$0")/session-init.sh"
   [[ -f "$_si" ]] && source "$_si" >/dev/null 2>&1 || true
-  if [[ -n "${ALLAY_GLOBAL_DATA_DIR:-}" ]] && [[ -f "${ALLAY_GLOBAL_DATA_DIR}/learnings.json" ]]; then
-    printf "%s" "${ALLAY_GLOBAL_DATA_DIR}/learnings.json"
+  if [[ -n "${FAE_GLOBAL_DATA_DIR:-}" ]] && [[ -f "${FAE_GLOBAL_DATA_DIR}/learnings.json" ]]; then
+    printf "%s" "${FAE_GLOBAL_DATA_DIR}/learnings.json"
   else
     printf "%s" "$LEARNINGS_LOCAL"
   fi
-) > /tmp/allay-learnings-path.$$ 2>/dev/null
-LEARNINGS_JSON=$(cat /tmp/allay-learnings-path.$$ 2>/dev/null)
-rm -f /tmp/allay-learnings-path.$$
+) > /tmp/fae-learnings-path.$$ 2>/dev/null
+LEARNINGS_JSON=$(cat /tmp/fae-learnings-path.$$ 2>/dev/null)
+rm -f /tmp/fae-learnings-path.$$
 [[ -z "$LEARNINGS_JSON" ]] && LEARNINGS_JSON="$LEARNINGS_LOCAL"
 if [[ -f "$LEARNINGS_JSON" ]] && jq empty "$LEARNINGS_JSON" >/dev/null 2>&1; then
   LEARN_SESSIONS=$(jq -r '.sessions_recorded // 0' "$LEARNINGS_JSON")
@@ -196,7 +196,7 @@ if [[ -f "$LEARNINGS_SCRIPT" ]]; then
   bash "$LEARNINGS_SCRIPT" "$PLUGINS_DIR" >/dev/null 2>/dev/null || true
 fi
 
-# ── Generate HTML → PDF report (Flux pattern) ──
+# ── Generate HTML → PDF report (Wixie pattern) ──
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PDF_SCRIPT="${SCRIPT_DIR}/report-pdf.py"
 PDF_PATH="${OUTPUT_PATH%.txt}.pdf"

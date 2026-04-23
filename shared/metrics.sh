@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Allay shared metrics — JSONL append with atomic mkdir locks + 10MB rotation
+# Emu shared metrics — JSONL append with atomic mkdir locks + 10MB rotation
 
 # Source constants if not already loaded
-if [[ -z "${ALLAY_LOCK_SUFFIX:-}" ]]; then
+if [[ -z "${FAE_LOCK_SUFFIX:-}" ]]; then
   SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
   # shellcheck source=constants.sh
   source "${SCRIPT_DIR}/constants.sh"
@@ -26,8 +26,8 @@ release_lock() {
 log_metric() {
   local file="${1:-state/metrics.jsonl}"
   local payload="$2"
-  local lock_dir="${file}${ALLAY_LOCK_SUFFIX}"
-  local max_size="${ALLAY_MAX_METRICS_BYTES:-10485760}"
+  local lock_dir="${file}${FAE_LOCK_SUFFIX}"
+  local max_size="${FAE_MAX_METRICS_BYTES:-10485760}"
 
   # Validate JSON before writing (spec rule #8)
   if ! printf "%s" "$payload" | jq empty >/dev/null 2>&1; then

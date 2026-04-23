@@ -1,7 +1,7 @@
 ---
 name: drift-awareness
 description: >
-  Use when Allay fires a Drift Alert.
+  Use when Emu fires a Drift Alert.
   Explains what drift means and how to break out.
   Auto-triggers on: "drift alert", "going in circles",
   "stuck", "keeps reading same file", "test won't pass".
@@ -33,7 +33,7 @@ IF pattern is "edit_revert":
   You're oscillating between two solutions.
   → Pick approach A. Implement it fully. Run tests.
   → If A fails completely, THEN try B. Don't alternate.
-  → /allay:checkpoint the current state before switching.
+  → /fae:checkpoint the current state before switching.
 
 IF pattern is "test_fail_loop":
   The same approach won't produce a different result.

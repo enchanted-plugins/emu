@@ -51,10 +51,10 @@ fi
 SESSION_HASH=$(md5sum "${HOOK_TRANSCRIPT_PATH}" 2>/dev/null | cut -c1-8 || echo "fallback-$$")
 
 # ── Cache file ──
-CACHE_FILE="/tmp/allay-reads-${SESSION_HASH}.jsonl"
+CACHE_FILE="/tmp/fae-reads-${SESSION_HASH}.jsonl"
 
 # ── Delta mode cache directory ──
-DELTA_CACHE_DIR="/tmp/allay-delta-${SESSION_HASH}"
+DELTA_CACHE_DIR="/tmp/fae-delta-${SESSION_HASH}"
 mkdir -p "$DELTA_CACHE_DIR" 2>/dev/null || true
 
 # ── Compute current file hash ──
@@ -81,7 +81,7 @@ if [[ -f "$CACHE_FILE" ]]; then
     LAST_TS=$(printf "%s" "$LAST_ENTRY" | jq -r '.ts // "0"' 2>/dev/null)
     ELAPSED=$(( NOW - LAST_TS ))
 
-    if [[ "$ELAPSED" -lt "$ALLAY_DUPLICATE_TTL_SECONDS" ]]; then
+    if [[ "$ELAPSED" -lt "$FAE_DUPLICATE_TTL_SECONDS" ]]; then
       if [[ "$CURRENT_HASH" == "$LAST_HASH" ]]; then
         # ── BLOCK: Same hash, within TTL ──
         PREVIEW=""

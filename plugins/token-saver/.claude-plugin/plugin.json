@@ -1,9 +1,9 @@
 {
-  "name": "allay-token-saver",
+  "name": "fae-token-saver",
   "description": "Reduces token usage via compression, dedup, delta mode, and output efficiency.",
   "version": "2.0.0",
   "author": {
-    "name": "Allay"
+    "name": "Emu"
   },
   "license": "MIT",
   "keywords": [

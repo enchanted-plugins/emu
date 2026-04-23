@@ -1,28 +1,28 @@
 #!/usr/bin/env bash
-# Allay session initializer — A9 Worktree Session Graph
+# Emu session initializer — A9 Worktree Session Graph
 #
 # Sourced by hooks to resolve, once per process:
-#   ALLAY_REPO_ID           stable identity across clones/worktrees (root-commit-hash[:12])
-#   ALLAY_WORKTREE_PATH     absolute path to this worktree's toplevel
-#   ALLAY_MAIN_WORKTREE     absolute path to the main (first) worktree
-#   ALLAY_WORKTREE_REL      worktree label relative to main ("." for main, else short label)
-#   ALLAY_IS_WORKTREE       "1" if running inside a linked worktree, "0" on main
-#   ALLAY_SESSION_ID        12-hex-char session id, persisted in plugin state/.session
-#   ALLAY_HOST              short hostname
-#   ALLAY_GLOBAL_STATE_DIR  $XDG_STATE_HOME/allay/<repo_id>/  (metrics shards live here)
-#   ALLAY_GLOBAL_DATA_DIR   $XDG_DATA_HOME/allay/<repo_id>/   (learnings.json lives here)
+#   FAE_REPO_ID           stable identity across clones/worktrees (root-commit-hash[:12])
+#   FAE_WORKTREE_PATH     absolute path to this worktree's toplevel
+#   FAE_MAIN_WORKTREE     absolute path to the main (first) worktree
+#   FAE_WORKTREE_REL      worktree label relative to main ("." for main, else short label)
+#   FAE_IS_WORKTREE       "1" if running inside a linked worktree, "0" on main
+#   FAE_SESSION_ID        12-hex-char session id, persisted in plugin state/.session
+#   FAE_HOST              short hostname
+#   FAE_GLOBAL_STATE_DIR  $XDG_STATE_HOME/fae/<repo_id>/  (metrics shards live here)
+#   FAE_GLOBAL_DATA_DIR   $XDG_DATA_HOME/fae/<repo_id>/   (learnings.json lives here)
 #
 # Contract:
 #   - Never prints to stdout/stderr. Exports vars.
 #   - Always returns 0 — missing git / missing commands degrade to best-effort fallbacks.
-#   - Safe to source multiple times (early-return if ALLAY_REPO_ID already set).
+#   - Safe to source multiple times (early-return if FAE_REPO_ID already set).
 
-if [[ -n "${ALLAY_REPO_ID:-}" ]]; then
+if [[ -n "${FAE_REPO_ID:-}" ]]; then
   return 0 2>/dev/null || exit 0
 fi
 
 # Source constants if not already loaded
-if [[ -z "${ALLAY_LOCK_SUFFIX:-}" ]]; then
+if [[ -z "${FAE_LOCK_SUFFIX:-}" ]]; then
   _si_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
   # shellcheck source=../constants.sh
   source "${_si_SCRIPT_DIR}/../constants.sh"
@@ -66,37 +66,37 @@ _si_hash12() {
 # ── Worktree resolution ──
 _si_resolve_worktree() {
   local cwd="${1:-$PWD}"
-  ALLAY_WORKTREE_PATH=""
-  ALLAY_MAIN_WORKTREE=""
-  ALLAY_IS_WORKTREE="0"
-  ALLAY_WORKTREE_REL="."
+  FAE_WORKTREE_PATH=""
+  FAE_MAIN_WORKTREE=""
+  FAE_IS_WORKTREE="0"
+  FAE_WORKTREE_REL="."
 
   if ! command -v git >/dev/null 2>&1; then
-    ALLAY_WORKTREE_PATH="$cwd"
-    ALLAY_MAIN_WORKTREE="$cwd"
+    FAE_WORKTREE_PATH="$cwd"
+    FAE_MAIN_WORKTREE="$cwd"
     return 0
   fi
 
-  ALLAY_WORKTREE_PATH=$(cd "$cwd" && git rev-parse --show-toplevel 2>/dev/null || echo "$cwd")
+  FAE_WORKTREE_PATH=$(cd "$cwd" && git rev-parse --show-toplevel 2>/dev/null || echo "$cwd")
 
   # First entry of `git worktree list --porcelain` is always the main worktree.
   local first_wt
   first_wt=$(cd "$cwd" && git worktree list --porcelain 2>/dev/null | awk '/^worktree /{print $2; exit}')
-  ALLAY_MAIN_WORKTREE="${first_wt:-$ALLAY_WORKTREE_PATH}"
+  FAE_MAIN_WORKTREE="${first_wt:-$FAE_WORKTREE_PATH}"
 
-  if [[ "$ALLAY_WORKTREE_PATH" != "$ALLAY_MAIN_WORKTREE" ]]; then
-    ALLAY_IS_WORKTREE="1"
+  if [[ "$FAE_WORKTREE_PATH" != "$FAE_MAIN_WORKTREE" ]]; then
+    FAE_IS_WORKTREE="1"
     # Prefer a path relative to main; fall back to basename if not a descendant.
     local rel=""
-    case "$ALLAY_WORKTREE_PATH" in
-      "$ALLAY_MAIN_WORKTREE"/*)
-        rel="${ALLAY_WORKTREE_PATH#"$ALLAY_MAIN_WORKTREE"/}"
+    case "$FAE_WORKTREE_PATH" in
+      "$FAE_MAIN_WORKTREE"/*)
+        rel="${FAE_WORKTREE_PATH#"$FAE_MAIN_WORKTREE"/}"
         ;;
       *)
-        rel=$(basename "$ALLAY_WORKTREE_PATH")
+        rel=$(basename "$FAE_WORKTREE_PATH")
         ;;
     esac
-    ALLAY_WORKTREE_REL="$rel"
+    FAE_WORKTREE_REL="$rel"
   fi
 }
 
@@ -113,7 +113,7 @@ _si_resolve_session_id() {
   if [[ -z "$session_id" ]] || [[ ${#session_id} -lt 12 ]]; then
     local start_ts
     start_ts=$(date -u +"%Y-%m-%dT%H:%M:%S.%NZ" 2>/dev/null || date -u +"%Y-%m-%dT%H:%M:%SZ")
-    session_id=$(printf "%s|%s|%s|%s" "$ALLAY_REPO_ID" "$ALLAY_WORKTREE_PATH" "$start_ts" "$$" | _si_hash12)
+    session_id=$(printf "%s|%s|%s|%s" "$FAE_REPO_ID" "$FAE_WORKTREE_PATH" "$start_ts" "$$" | _si_hash12)
 
     if [[ -n "$marker_dir" ]]; then
       mkdir -p "$marker_dir" 2>/dev/null || true
@@ -123,27 +123,27 @@ _si_resolve_session_id() {
       fi
     fi
   fi
-  ALLAY_SESSION_ID="$session_id"
+  FAE_SESSION_ID="$session_id"
 }
 
 # ── Main ──
-_si_cwd="${ALLAY_INIT_CWD:-$PWD}"
-_si_plugin_state="${ALLAY_PLUGIN_STATE_DIR:-}"
+_si_cwd="${FAE_INIT_CWD:-$PWD}"
+_si_plugin_state="${FAE_PLUGIN_STATE_DIR:-}"
 
-ALLAY_REPO_ID="$(_si_compute_repo_id "$_si_cwd")"
+FAE_REPO_ID="$(_si_compute_repo_id "$_si_cwd")"
 _si_resolve_worktree "$_si_cwd"
 _si_resolve_session_id "$_si_plugin_state"
 
-ALLAY_HOST=$(hostname 2>/dev/null | awk -F. '{print $1}' || echo "unknown")
+FAE_HOST=$(hostname 2>/dev/null | awk -F. '{print $1}' || echo "unknown")
 
-ALLAY_GLOBAL_STATE_DIR="${ALLAY_XDG_STATE_HOME}/${ALLAY_GLOBAL_STATE_SUBDIR}/${ALLAY_REPO_ID}"
-ALLAY_GLOBAL_DATA_DIR="${ALLAY_XDG_DATA_HOME}/${ALLAY_GLOBAL_DATA_SUBDIR}/${ALLAY_REPO_ID}"
+FAE_GLOBAL_STATE_DIR="${FAE_XDG_STATE_HOME}/${FAE_GLOBAL_STATE_SUBDIR}/${FAE_REPO_ID}"
+FAE_GLOBAL_DATA_DIR="${FAE_XDG_DATA_HOME}/${FAE_GLOBAL_DATA_SUBDIR}/${FAE_REPO_ID}"
 
-mkdir -p "$ALLAY_GLOBAL_STATE_DIR" 2>/dev/null || true
-mkdir -p "$ALLAY_GLOBAL_DATA_DIR" 2>/dev/null || true
+mkdir -p "$FAE_GLOBAL_STATE_DIR" 2>/dev/null || true
+mkdir -p "$FAE_GLOBAL_DATA_DIR" 2>/dev/null || true
 
-export ALLAY_REPO_ID ALLAY_WORKTREE_PATH ALLAY_MAIN_WORKTREE ALLAY_WORKTREE_REL ALLAY_IS_WORKTREE
-export ALLAY_SESSION_ID ALLAY_HOST ALLAY_GLOBAL_STATE_DIR ALLAY_GLOBAL_DATA_DIR
+export FAE_REPO_ID FAE_WORKTREE_PATH FAE_MAIN_WORKTREE FAE_WORKTREE_REL FAE_IS_WORKTREE
+export FAE_SESSION_ID FAE_HOST FAE_GLOBAL_STATE_DIR FAE_GLOBAL_DATA_DIR
 
 unset _si_cwd _si_plugin_state _si_SCRIPT_DIR
 unset -f _si_compute_repo_id _si_hash12 _si_resolve_worktree _si_resolve_session_id 2>/dev/null || true

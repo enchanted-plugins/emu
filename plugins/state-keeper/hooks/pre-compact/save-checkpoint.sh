@@ -39,7 +39,7 @@ SESSION_HASH=$(md5sum "${HOOK_TRANSCRIPT_PATH}" 2>/dev/null | cut -c1-8 || echo 
 STATE_DIR="${PLUGIN_ROOT}/state"
 CHECKPOINT_FILE="${STATE_DIR}/checkpoint.md"
 CHECKPOINT_TMP="${CHECKPOINT_FILE}.tmp"
-LOCK_DIR="${CHECKPOINT_FILE}${ALLAY_LOCK_SUFFIX}"
+LOCK_DIR="${CHECKPOINT_FILE}${FAE_LOCK_SUFFIX}"
 
 # ── Gather git info (graceful without git — skip sections, no error) ──
 GIT_BRANCH=""
@@ -70,7 +70,7 @@ fi
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
 CHECKPOINT=$(cat <<CHECKPOINT
-# Allay Checkpoint
+# Emu Checkpoint
 > Saved at: ${TIMESTAMP}
 > Session: ${SESSION_HASH}
 
@@ -90,16 +90,16 @@ ${GIT_LOG:-None}
 ${PROJECT_INSTRUCTIONS:-No CLAUDE.md found}
 
 ## User-Flagged Context
-${REMEMBER_CONTENT:-No items saved. Use /allay:checkpoint <text> to save.}
+${REMEMBER_CONTENT:-No items saved. Use /fae:checkpoint <text> to save.}
 CHECKPOINT
 )
 
 # ── Enforce 50KB limit ──
 CHECKPOINT_BYTES=${#CHECKPOINT}
-if [[ "$CHECKPOINT_BYTES" -gt "$ALLAY_MAX_CHECKPOINT_BYTES" ]]; then
-  CHECKPOINT="${CHECKPOINT:0:$ALLAY_MAX_CHECKPOINT_BYTES}
+if [[ "$CHECKPOINT_BYTES" -gt "$FAE_MAX_CHECKPOINT_BYTES" ]]; then
+  CHECKPOINT="${CHECKPOINT:0:$FAE_MAX_CHECKPOINT_BYTES}
 
-[truncated, checkpoint exceeded ${ALLAY_MAX_CHECKPOINT_BYTES} bytes]"
+[truncated, checkpoint exceeded ${FAE_MAX_CHECKPOINT_BYTES} bytes]"
 fi
 
 # ── Write atomically with lock ──
@@ -120,6 +120,6 @@ METRIC=$(jq -cn \
   --argjson size "$CHECKPOINT_SIZE" \
   '{event: $event, ts: $ts, size: $size, branch: $branch}')
 
-log_metric "${STATE_DIR}/${ALLAY_METRICS_FILE##*/}" "$METRIC"
+log_metric "${STATE_DIR}/${FAE_METRICS_FILE##*/}" "$METRIC"
 
 exit 0

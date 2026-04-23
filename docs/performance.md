@@ -1,8 +1,8 @@
 # Performance
 
-How much does Allay save, actually? This page is the skeleton for the answer. Numbers land here once benchmarks are wired into CI. Until then, the page states the **methodology** so any claim can be reproduced.
+How much does Emu save, actually? This page is the skeleton for the answer. Numbers land here once benchmarks are wired into CI. Until then, the page states the **methodology** so any claim can be reproduced.
 
-## What Allay is supposed to save
+## What Emu is supposed to save
 
 Three separate kinds of savings, each measured differently.
 
@@ -10,7 +10,7 @@ Three separate kinds of savings, each measured differently.
 |--------|-----------|--------------|
 | **Runway extension** | `context-guard` compresses large tool outputs before they land in the window. | More turns per session before compaction / context reset. |
 | **Dedup** | Identical re-reads of the same file or identical tool outputs are collapsed. | Fewer tokens spent on repeated evidence. |
-| **Drift early-exit** | When Shannon entropy flags a drifting session, Allay emits an advisory so the user can abort early. | Spend avoided on sessions that were going nowhere. |
+| **Drift early-exit** | When Shannon entropy flags a drifting session, Emu emits an advisory so the user can abort early. | Spend avoided on sessions that were going nowhere. |
 
 Savings are measured **per session**, not in aggregate, because session shape varies wildly (chat vs. code edit vs. long research).
 
@@ -28,7 +28,7 @@ Each workload has a fixed prompt script. Runs are deterministic modulo model non
 
 ### Metrics
 
-For each workload, measure both with-Allay and without-Allay:
+For each workload, measure both with-Emu and without-Emu:
 
 | Metric | How it's measured |
 |--------|-------------------|
@@ -40,7 +40,7 @@ For each workload, measure both with-Allay and without-Allay:
 
 ### Reporting
 
-Each benchmark run produces a JSON record with all metrics, workload id, Allay version, Claude Code version, model, and date. CI keeps the last 30 runs; this page links to the dashboard once wired.
+Each benchmark run produces a JSON record with all metrics, workload id, Emu version, Claude Code version, model, and date. CI keeps the last 30 runs; this page links to the dashboard once wired.
 
 ### Honest-numbers contract
 
@@ -50,8 +50,8 @@ The benchmark may **not** cherry-pick. Published numbers come from the median ru
 
 ```bash
 # clone and install
-git clone https://github.com/enchanted-plugins/allay.git
-cd allay
+git clone https://github.com/enchanted-plugins/fae.git
+cd fae
 bash install.sh
 
 # run the benchmark harness against each workload
@@ -70,10 +70,10 @@ Each run emits `tests/perf/results/<workload>-<timestamp>.json`. Compare across 
 
 ## Expected results
 
-Until CI numbers land here, **we make no numerical claims.** Anecdotes from our own sessions are not evidence — reproducible benchmarks are. If this section still says "TBD" when you read it, the benchmark harness hasn't landed; treat Allay as a best-effort savings layer.
+Until CI numbers land here, **we make no numerical claims.** Anecdotes from our own sessions are not evidence — reproducible benchmarks are. If this section still says "TBD" when you read it, the benchmark harness hasn't landed; treat Emu as a best-effort savings layer.
 
 ## Related
 
-- [PRIVACY.md](../PRIVACY.md) — what Allay reads and stores.
+- [PRIVACY.md](../PRIVACY.md) — what Emu reads and stores.
 - [docs/science/README.md](science/README.md) — the algorithms that produce these savings, derived.
-- [docs/glossary.md](glossary.md) — defines "runway", "drift", "dedup" in Allay's precise senses.
+- [docs/glossary.md](glossary.md) — defines "runway", "drift", "dedup" in Emu's precise senses.

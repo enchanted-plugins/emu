@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Allay Session Report — HTML → single-page PDF (Flux pattern).
+Fae Session Report — HTML → single-page PDF (Wixie pattern).
 
 Usage: python report-pdf.py <plugins_dir> [output_path]
 
@@ -173,7 +173,7 @@ def build_html(plugins_dir):
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Allay Session Report</title>
+<title>Fae Session Report</title>
 <style>
   @page {{ size: letter; margin: 0; }}
   * {{ margin: 0; padding: 0; box-sizing: border-box; }}
@@ -329,7 +329,7 @@ def build_html(plugins_dir):
 <div class="brand-bar"></div>
 
 <div class="header">
-  <h1>Allay <span>Session Report</span></h1>
+  <h1>Fae <span>Session Report</span></h1>
   <div class="meta">{now}<br>Every token accounted for.</div>
 </div>
 
@@ -383,7 +383,7 @@ def build_html(plugins_dir):
 
 <div class="footer">
   <span>Methodology: conservative multipliers — Bash=2K/ea, DupBlock=4K/ea, Drift=800tok/turn</span>
-  <span>Session: {n_turns} turns | ~{dur} min | Allay v2.0.0</span>
+  <span>Session: {n_turns} turns | ~{dur} min | Fae v2.0.0</span>
 </div>
 <div class="brand-bottom"></div>
 </body>
@@ -463,7 +463,7 @@ if __name__ == "__main__":
 
     plugins_dir = sys.argv[1]
     ts = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
-    pdf_path = sys.argv[2] if len(sys.argv) > 2 else os.path.join(tempfile.gettempdir(), f"allay-report-{ts}.pdf")
+    pdf_path = sys.argv[2] if len(sys.argv) > 2 else os.path.join(tempfile.gettempdir(), f"fae-report-{ts}.pdf")
 
     # Step 1: Generate HTML
     html_content = build_html(plugins_dir)

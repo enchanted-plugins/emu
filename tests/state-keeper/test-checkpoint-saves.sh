@@ -33,7 +33,7 @@ if [[ ! -f "$CHECKPOINT" ]]; then
 fi
 
 # Verify checkpoint contains expected sections
-if ! grep -q "# Allay Checkpoint" "$CHECKPOINT"; then
+if ! grep -q "# Emu Checkpoint" "$CHECKPOINT"; then
   echo "FAIL: checkpoint.md missing header"
   rm -f "$MOCK_TRANSCRIPT"
   exit 1

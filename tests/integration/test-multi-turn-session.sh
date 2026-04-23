@@ -30,9 +30,9 @@ MOCK_TRANSCRIPT=$(mktemp)
 echo '{"role":"user","content":"integration test"}' > "$MOCK_TRANSCRIPT"
 
 SESSION_HASH=$(md5sum "$MOCK_TRANSCRIPT" 2>/dev/null | cut -c1-8 || echo "test")
-rm -f "/tmp/allay-drift-${SESSION_HASH}.jsonl" "/tmp/allay-drift-cooldown-${SESSION_HASH}"
-rm -f "/tmp/allay-reads-${SESSION_HASH}.jsonl"
-rm -rf "/tmp/allay-delta-${SESSION_HASH}"
+rm -f "/tmp/fae-drift-${SESSION_HASH}.jsonl" "/tmp/fae-drift-cooldown-${SESSION_HASH}"
+rm -f "/tmp/fae-reads-${SESSION_HASH}.jsonl"
+rm -rf "/tmp/fae-delta-${SESSION_HASH}"
 
 # ── Turn 1: Bash command (token-saver compresses, context-guard tracks) ──
 BASH_INPUT=$(jq -n \
@@ -144,9 +144,9 @@ fi
 
 # Cleanup
 rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT"
-rm -f "/tmp/allay-drift-${SESSION_HASH}.jsonl" "/tmp/allay-drift-cooldown-${SESSION_HASH}"
-rm -f "/tmp/allay-reads-${SESSION_HASH}.jsonl"
-rm -rf "/tmp/allay-delta-${SESSION_HASH}"
+rm -f "/tmp/fae-drift-${SESSION_HASH}.jsonl" "/tmp/fae-drift-cooldown-${SESSION_HASH}"
+rm -f "/tmp/fae-reads-${SESSION_HASH}.jsonl"
+rm -rf "/tmp/fae-delta-${SESSION_HASH}"
 rm -f "${CG_STATE}/metrics.jsonl" "${TS_STATE}/metrics.jsonl" "${SK_STATE}/metrics.jsonl"
 rm -rf "${CG_STATE}/metrics.jsonl.lock" "${TS_STATE}/metrics.jsonl.lock" "${SK_STATE}/metrics.jsonl.lock"
 rm -f "${SK_STATE}/checkpoint.md" "${SK_STATE}/checkpoint.md.tmp"

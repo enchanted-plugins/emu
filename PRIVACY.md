@@ -1,29 +1,29 @@
 # Privacy
 
-Allay watches your Claude Code session to do its job: runway tracking, drift detection, checkpointing, and dedup. Watching means reading. This page names **exactly** what Allay reads, what it stores, what it does *not* transmit, and how to verify each claim yourself.
+Emu watches your Claude Code session to do its job: runway tracking, drift detection, checkpointing, and dedup. Watching means reading. This page names **exactly** what Emu reads, what it stores, what it does *not* transmit, and how to verify each claim yourself.
 
 ## Principles
 
-1. **Everything Allay does runs locally.** No cloud service, no phone-home, no telemetry.
-2. **Nothing is transmitted off your machine.** Allay has no outbound network code. Every hook and script either writes to stdout (the conversation), to `~/.claude/allay/` (state), or to `stderr` (logs).
+1. **Everything Emu does runs locally.** No cloud service, no phone-home, no telemetry.
+2. **Nothing is transmitted off your machine.** Emu has no outbound network code. Every hook and script either writes to stdout (the conversation), to `~/.claude/fae/` (state), or to `stderr` (logs).
 3. **You can verify every claim on this page.** The source is in this repo; the storage is on your disk; `grep` is enough.
 
-## What Allay reads
+## What Emu reads
 
 | Surface | Read by | Why |
 |---------|---------|-----|
 | Every prompt you submit | `context-guard` PreToolUse / PostToolUse hooks | Runway estimation, drift detection, dedup. |
 | Every tool-call output | `context-guard` PostToolUse hook | Compression of large outputs, drift scoring. |
 | Turn-by-turn transcript | `context-guard` + `state-keeper` | Checkpoint content, entropy scoring. |
-| File reads you or Claude initiate | Not read by Allay. | Allay does not re-read files. |
-| Your git repo contents | Not read by Allay. | Allay has no git integration. |
-| Environment variables | Not read, except those set by Claude Code itself. | Allay reads no process env beyond `CLAUDE_*`. |
+| File reads you or Claude initiate | Not read by Emu. | Emu does not re-read files. |
+| Your git repo contents | Not read by Emu. | Emu has no git integration. |
+| Environment variables | Not read, except those set by Claude Code itself. | Emu reads no process env beyond `CLAUDE_*`. |
 
-Concretely: Allay reads the **contents of your conversation**, because that's what produces tokens. It does not read your source code, your git history, your SSH keys, your shell history, or anything else.
+Concretely: Emu reads the **contents of your conversation**, because that's what produces tokens. It does not read your source code, your git history, your SSH keys, your shell history, or anything else.
 
-## What Allay stores
+## What Emu stores
 
-All state lives under `~/.claude/allay/` (or the Claude Code plugin state directory if you've customized it).
+All state lives under `~/.claude/fae/` (or the Claude Code plugin state directory if you've customized it).
 
 | File / dir | Contents | Lifetime |
 |------------|----------|----------|
@@ -33,32 +33,32 @@ All state lives under `~/.claude/allay/` (or the Claude Code plugin state direct
 | `dedup/cache.json` | Hashes of recent tool outputs to detect duplicates. | Per-session. |
 | `logs/hooks.log` | Timestamp + event name + session id. **No content.** | Until you delete it. |
 
-**Checkpoints are summary metadata**, not verbatim transcripts. If you want to verify: `cat ~/.claude/allay/checkpoints/*.json` — you'll see the shape; you won't see your prompts.
+**Checkpoints are summary metadata**, not verbatim transcripts. If you want to verify: `cat ~/.claude/fae/checkpoints/*.json` — you'll see the shape; you won't see your prompts.
 
-## What Allay does not transmit
+## What Emu does not transmit
 
-Allay has **no outbound network code**. To verify:
+Emu has **no outbound network code**. To verify:
 
 ```bash
 # grep every shell hook and Python script for network invocations
-grep -rE 'curl|wget|requests|urllib|httpx|socket|nc -' ~/.claude/plugins/allay-*/
-grep -rE 'fetch\(|XMLHttpRequest|WebSocket' ~/.claude/plugins/allay-*/
+grep -rE 'curl|wget|requests|urllib|httpx|socket|nc -' ~/.claude/plugins/fae-*/
+grep -rE 'fetch\(|XMLHttpRequest|WebSocket' ~/.claude/plugins/fae-*/
 ```
 
 Both should return zero matches.
 
 If either returns a match, file a security report — that would be a P0 bug against this policy. See [SECURITY.md](SECURITY.md).
 
-## What Allay does not do
+## What Emu does not do
 
-- **No fingerprinting.** Allay does not compute stable identifiers across sessions.
-- **No profiling of your code.** Allay does not read source files; it reads tool-call output, which is your call.
-- **No inference.** Allay does not send your prompts to a model to get an embedding. Every score Allay computes is a local arithmetic operation on integers or hashes.
+- **No fingerprinting.** Emu does not compute stable identifiers across sessions.
+- **No profiling of your code.** Emu does not read source files; it reads tool-call output, which is your call.
+- **No inference.** Emu does not send your prompts to a model to get an embedding. Every score Emu computes is a local arithmetic operation on integers or hashes.
 - **No ad-serving, no A/B testing.** Not a SaaS.
 
 ## Disabling specific behaviors
 
-If you don't want Allay to keep checkpoints:
+If you don't want Emu to keep checkpoints:
 
 ```jsonc
 // .claude/settings.json
@@ -74,21 +74,21 @@ Same pattern for any sub-plugin. Disabling `context-guard` turns off runway + dr
 ## Clearing all state
 
 ```bash
-rm -rf ~/.claude/allay/
+rm -rf ~/.claude/fae/
 ```
 
 No side effects, no re-downloads, no "would you like to keep…" prompts. The next session starts clean.
 
 ## What to do if you suspect a leak
 
-1. Check `~/.claude/allay/logs/hooks.log` for unexpected events.
+1. Check `~/.claude/fae/logs/hooks.log` for unexpected events.
 2. Run the two `grep` commands above against the installed plugin directory.
 3. If anything looks off, file a private security advisory — see [SECURITY.md](SECURITY.md).
 
 ## Governance
 
-- The shared behavioral contract at [shared/conduct/hooks.md](shared/conduct/hooks.md) § Injection over denial forbids hooks from taking side effects on repo state (auto-commits, auto-renames). Allay's hooks adhere to this.
-- Any change to what Allay stores or transmits requires an ADR in [docs/adr/](docs/adr/) before merge.
+- The shared behavioral contract at [shared/conduct/hooks.md](shared/conduct/hooks.md) § Injection over denial forbids hooks from taking side effects on repo state (auto-commits, auto-renames). Emu's hooks adhere to this.
+- Any change to what Emu stores or transmits requires an ADR in [docs/adr/](docs/adr/) before merge.
 - The `CODEOWNERS` file routes privacy-relevant paths through the maintainer.
 
 This page is binding. If behavior diverges from this document, the behavior is the bug.

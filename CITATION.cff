@@ -1,12 +1,12 @@
 cff-version: 1.2.0
-title: "Allay"
+title: "Fae"
 message: "If you use this software, please cite it as below."
 type: software
 authors:
   - alias: klaiderman
     affiliation: "enchanted-plugins"
-repository-code: "https://github.com/enchanted-plugins/allay"
-url: "https://github.com/enchanted-plugins/allay"
+repository-code: "https://github.com/enchanted-plugins/fae"
+url: "https://github.com/enchanted-plugins/fae"
 license: MIT
 version: "2.0.0"
 date-released: "2026-04-20"

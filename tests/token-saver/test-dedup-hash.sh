@@ -17,7 +17,7 @@ echo '{"role":"user","content":"test"}' > "$MOCK_TRANSCRIPT"
 
 # Clean any previous cache
 SESSION_HASH=$(md5sum "$MOCK_TRANSCRIPT" 2>/dev/null | cut -c1-8 || echo "test")
-rm -f "/tmp/allay-reads-${SESSION_HASH}.jsonl"
+rm -f "/tmp/fae-reads-${SESSION_HASH}.jsonl"
 
 INPUT=$(jq -n \
   --arg transcript "$MOCK_TRANSCRIPT" \
@@ -30,7 +30,7 @@ printf "%s" "$INPUT" | CLAUDE_PLUGIN_ROOT="${REPO_ROOT}/plugins/token-saver" bas
 
 if [[ $EXIT1 -ne 0 ]]; then
   echo "FAIL: First read should exit 0, got $EXIT1"
-  rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT" "/tmp/allay-reads-${SESSION_HASH}.jsonl"
+  rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT" "/tmp/fae-reads-${SESSION_HASH}.jsonl"
   exit 1
 fi
 
@@ -40,7 +40,7 @@ printf "%s" "$INPUT" | CLAUDE_PLUGIN_ROOT="${REPO_ROOT}/plugins/token-saver" bas
 
 if [[ $EXIT2 -ne 2 ]]; then
   echo "FAIL: Second read of unchanged file should exit 2, got $EXIT2"
-  rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT" "/tmp/allay-reads-${SESSION_HASH}.jsonl"
+  rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT" "/tmp/fae-reads-${SESSION_HASH}.jsonl"
   exit 1
 fi
 
@@ -52,12 +52,12 @@ printf "%s" "$INPUT" | CLAUDE_PLUGIN_ROOT="${REPO_ROOT}/plugins/token-saver" bas
 
 if [[ $EXIT3 -ne 0 ]]; then
   echo "FAIL: Read of modified file should exit 0, got $EXIT3"
-  rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT" "/tmp/allay-reads-${SESSION_HASH}.jsonl"
+  rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT" "/tmp/fae-reads-${SESSION_HASH}.jsonl"
   exit 1
 fi
 
 # Cleanup
-rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT" "/tmp/allay-reads-${SESSION_HASH}.jsonl"
+rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT" "/tmp/fae-reads-${SESSION_HASH}.jsonl"
 rm -f "${REPO_ROOT}/plugins/token-saver/state/metrics.jsonl"
 rm -rf "${REPO_ROOT}/plugins/token-saver/state/metrics.jsonl.lock"
 

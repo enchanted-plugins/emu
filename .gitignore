@@ -1,4 +1,4 @@
-# Allay state files (per-plugin session data)
+# Fae state files (per-plugin session data)
 plugins/*/state/metrics.jsonl
 plugins/*/state/memory.jsonl
 plugins/*/state/checkpoint.md
@@ -29,7 +29,7 @@ plugins/*/state/learnings.json.tmp
 Thumbs.db
 
 # Tmp session caches
-/tmp/allay-*
+/tmp/fae-*
 
 # Asset toolchain (mermaid-cli + mathjax-full are dev-only; SVGs are committed)
 docs/assets/node_modules/

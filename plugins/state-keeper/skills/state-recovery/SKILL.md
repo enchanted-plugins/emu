@@ -24,7 +24,7 @@ Do not guess. Do not invent. Read the file.
 
 <decision_tree>
 STEP 1: Does ${CLAUDE_PLUGIN_ROOT}/state/checkpoint.md exist?
-  NO → Tell user: "No checkpoint found. Use /allay:checkpoint
+  NO → Tell user: "No checkpoint found. Use /fae:checkpoint
        to save context for next compaction." STOP.
   YES → Continue.
 

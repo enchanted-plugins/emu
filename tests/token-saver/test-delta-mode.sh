@@ -16,8 +16,8 @@ MOCK_TRANSCRIPT=$(mktemp)
 echo '{"role":"user","content":"test-delta"}' > "$MOCK_TRANSCRIPT"
 
 SESSION_HASH=$(md5sum "$MOCK_TRANSCRIPT" 2>/dev/null | cut -c1-8 || echo "test")
-rm -f "/tmp/allay-reads-${SESSION_HASH}.jsonl"
-rm -rf "/tmp/allay-delta-${SESSION_HASH}"
+rm -f "/tmp/fae-reads-${SESSION_HASH}.jsonl"
+rm -rf "/tmp/fae-delta-${SESSION_HASH}"
 
 INPUT=$(jq -n \
   --arg transcript "$MOCK_TRANSCRIPT" \
@@ -45,8 +45,8 @@ STDERR_OUT=$(printf "%s" "$INPUT" | CLAUDE_PLUGIN_ROOT="${REPO_ROOT}/plugins/tok
 if [[ $EXIT2 -ne 0 ]]; then
   echo "FAIL: Read of changed file should exit 0 (delta mode), got $EXIT2"
   rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT"
-  rm -f "/tmp/allay-reads-${SESSION_HASH}.jsonl"
-  rm -rf "/tmp/allay-delta-${SESSION_HASH}"
+  rm -f "/tmp/fae-reads-${SESSION_HASH}.jsonl"
+  rm -rf "/tmp/fae-delta-${SESSION_HASH}"
   exit 1
 fi
 
@@ -63,15 +63,15 @@ printf "%s" "$INPUT" | CLAUDE_PLUGIN_ROOT="${REPO_ROOT}/plugins/token-saver" bas
 if [[ $EXIT3 -ne 2 ]]; then
   echo "FAIL: Third read of unchanged file should exit 2, got $EXIT3"
   rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT"
-  rm -f "/tmp/allay-reads-${SESSION_HASH}.jsonl"
-  rm -rf "/tmp/allay-delta-${SESSION_HASH}"
+  rm -f "/tmp/fae-reads-${SESSION_HASH}.jsonl"
+  rm -rf "/tmp/fae-delta-${SESSION_HASH}"
   exit 1
 fi
 
 # Cleanup
 rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT"
-rm -f "/tmp/allay-reads-${SESSION_HASH}.jsonl"
-rm -rf "/tmp/allay-delta-${SESSION_HASH}"
+rm -f "/tmp/fae-reads-${SESSION_HASH}.jsonl"
+rm -rf "/tmp/fae-delta-${SESSION_HASH}"
 rm -f "${REPO_ROOT}/plugins/token-saver/state/metrics.jsonl"
 rm -rf "${REPO_ROOT}/plugins/token-saver/state/metrics.jsonl.lock"
 

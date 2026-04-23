@@ -17,7 +17,7 @@ MOCK_TRANSCRIPT=$(mktemp)
 echo '{"role":"user","content":"analytics test"}' > "$MOCK_TRANSCRIPT"
 
 SESSION_HASH=$(md5sum "$MOCK_TRANSCRIPT" 2>/dev/null | cut -c1-8 || echo "test")
-rm -f "/tmp/allay-drift-${SESSION_HASH}.jsonl" "/tmp/allay-drift-cooldown-${SESSION_HASH}"
+rm -f "/tmp/fae-drift-${SESSION_HASH}.jsonl" "/tmp/fae-drift-cooldown-${SESSION_HASH}"
 
 # Run hook with different tool names
 TOOLS=("Read" "Bash" "Write" "Grep" "Glob")
@@ -51,7 +51,7 @@ done
 if [[ ! -f "${STATE_DIR}/metrics.jsonl" ]]; then
   echo "FAIL: metrics.jsonl should be created"
   rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT"
-  rm -f "/tmp/allay-drift-${SESSION_HASH}.jsonl" "/tmp/allay-drift-cooldown-${SESSION_HASH}"
+  rm -f "/tmp/fae-drift-${SESSION_HASH}.jsonl" "/tmp/fae-drift-cooldown-${SESSION_HASH}"
   exit 1
 fi
 
@@ -60,7 +60,7 @@ for tool in "${TOOLS[@]}"; do
   if ! grep '"event":"turn"' "${STATE_DIR}/metrics.jsonl" | grep -q "\"tool\":\"${tool}\""; then
     echo "FAIL: missing turn event for tool: $tool"
     rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT"
-    rm -f "/tmp/allay-drift-${SESSION_HASH}.jsonl" "/tmp/allay-drift-cooldown-${SESSION_HASH}"
+    rm -f "/tmp/fae-drift-${SESSION_HASH}.jsonl" "/tmp/fae-drift-cooldown-${SESSION_HASH}"
     rm -f "${STATE_DIR}/metrics.jsonl"
     rm -rf "${STATE_DIR}/metrics.jsonl.lock"
     exit 1
@@ -75,7 +75,7 @@ for field in "event" "ts" "tool" "tokens_est" "turn"; do
   if [[ -z "$VALUE" ]] || [[ "$VALUE" == "null" ]]; then
     echo "FAIL: turn event missing required field: $field"
     rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT"
-    rm -f "/tmp/allay-drift-${SESSION_HASH}.jsonl" "/tmp/allay-drift-cooldown-${SESSION_HASH}"
+    rm -f "/tmp/fae-drift-${SESSION_HASH}.jsonl" "/tmp/fae-drift-cooldown-${SESSION_HASH}"
     rm -f "${STATE_DIR}/metrics.jsonl"
     rm -rf "${STATE_DIR}/metrics.jsonl.lock"
     exit 1
@@ -87,7 +87,7 @@ TOKENS=$(printf "%s" "$TURN_LINE" | jq -r '.tokens_est' 2>/dev/null)
 if [[ "$TOKENS" -le 0 ]] 2>/dev/null; then
   echo "FAIL: tokens_est should be positive, got $TOKENS"
   rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT"
-  rm -f "/tmp/allay-drift-${SESSION_HASH}.jsonl" "/tmp/allay-drift-cooldown-${SESSION_HASH}"
+  rm -f "/tmp/fae-drift-${SESSION_HASH}.jsonl" "/tmp/fae-drift-cooldown-${SESSION_HASH}"
   rm -f "${STATE_DIR}/metrics.jsonl"
   rm -rf "${STATE_DIR}/metrics.jsonl.lock"
   exit 1
@@ -95,7 +95,7 @@ fi
 
 # Cleanup
 rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT"
-rm -f "/tmp/allay-drift-${SESSION_HASH}.jsonl" "/tmp/allay-drift-cooldown-${SESSION_HASH}"
+rm -f "/tmp/fae-drift-${SESSION_HASH}.jsonl" "/tmp/fae-drift-cooldown-${SESSION_HASH}"
 rm -f "${STATE_DIR}/metrics.jsonl"
 rm -rf "${STATE_DIR}/metrics.jsonl.lock"
 

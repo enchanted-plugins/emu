@@ -1,6 +1,6 @@
-# The Science Behind Allay
+# The Science Behind Emu
 
-Formal mathematical models powering every context-health engine in Allay.
+Formal mathematical models powering every context-health engine in Emu.
 
 These aren't abstractions. Every formula maps to running code.
 
@@ -62,7 +62,7 @@ The `save-checkpoint.sh` hook (PreCompact) collects: current branch (`git branch
 
 <p align="center"><img src="../assets/math/a6-delta.svg" alt="decision(f) = DELTA when h(f) != h_cached AND delta_t < TTL"></p>
 
-The `block-duplicates.sh` hook (PreToolUse on Read) maintains a session-scoped cache `/tmp/allay-reads-<session>.jsonl`. Each Read: hash the target file, look up the most recent cache entry for the same path. Same hash within the 10-minute TTL → block with exit 2, return a preview and suggest the `FULL:` bypass prefix. Hash differs → emit a unified diff as delta if the diff is under half the file size; otherwise let the read proceed and refresh the cache.
+The `block-duplicates.sh` hook (PreToolUse on Read) maintains a session-scoped cache `/tmp/fae-reads-<session>.jsonl`. Each Read: hash the target file, look up the most recent cache entry for the same path. Same hash within the 10-minute TTL → block with exit 2, return a preview and suggest the `FULL:` bypass prefix. Hash differs → emit a unified diff as delta if the diff is under half the file size; otherwise let the read proceed and refresh the cache.
 
 **Implementation:** `plugins/token-saver/hooks/pre-tool-use/block-duplicates.sh`
 
@@ -96,7 +96,7 @@ Uses EMA with α=0.3 to blend current-session metrics into historical rates. Tra
 
 **Problem:** Attribute every tool call to the skill that invoked it, enabling per-skill token analytics and cost allocation.
 
-Every tool call is attributed to the currently-active skill via a LIFO stack. Skills register scope at entry with a 16-hex-char invocation ID (surviving PID reuse per systemd convention). Attributes persist to `skill-metrics.jsonl` alongside `metrics.jsonl`. Emitted independently of standard metrics for fine-grained per-skill breakdown via `/allay:analytics`.
+Every tool call is attributed to the currently-active skill via a LIFO stack. Skills register scope at entry with a 16-hex-char invocation ID (surviving PID reuse per systemd convention). Attributes persist to `skill-metrics.jsonl` alongside `metrics.jsonl`. Emitted independently of standard metrics for fine-grained per-skill breakdown via `/fae:analytics`.
 
 **Implementation:** `plugins/context-guard/hooks/post-tool-use/detect-drift.sh`, `shared/scripts/session-init.sh`
 
@@ -108,7 +108,7 @@ Every tool call is attributed to the currently-active skill via a LIFO stack. Sk
 
 **Problem:** Unify token accounting across multiple git worktrees of the same repository into one cross-worktree view.
 
-Derives a stable repository ID from the first commit hash (git rev-list --max-parents=0 HEAD) to identify the repo across all clones, forks, and worktrees. Sessions write to global state directories keyed by repo_id, with per-PID sharding to avoid concurrent-append interleaving. Readers glob + merge shards, then emit a WORKTREE OVERVIEW in `/allay:report` when ≥2 worktrees are detected.
+Derives a stable repository ID from the first commit hash (git rev-list --max-parents=0 HEAD) to identify the repo across all clones, forks, and worktrees. Sessions write to global state directories keyed by repo_id, with per-PID sharding to avoid concurrent-append interleaving. Readers glob + merge shards, then emit a WORKTREE OVERVIEW in `/fae:report` when ≥2 worktrees are detected.
 
 **Implementation:** `shared/scripts/session-init.sh`, `plugins/context-guard/agents/analyst.md`
 

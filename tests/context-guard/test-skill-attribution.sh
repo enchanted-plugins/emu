@@ -4,7 +4,7 @@
 # Verifies:
 #   - No skill registered → metrics.jsonl turn entries have "skill":"manual" and
 #     skill-metrics.jsonl is NOT created.
-#   - After register → turn events carry "skill":"flux:converge" and skill-metrics.jsonl
+#   - After register → turn events carry "skill":"wixie:converge" and skill-metrics.jsonl
 #     contains a rich Atuin-style row with scope_id, session_id, repo_id, worktree.
 #   - After unregister → new turn events revert to "manual".
 set -euo pipefail
@@ -17,7 +17,7 @@ STATE_DIR="${REPO_ROOT}/plugins/context-guard/state"
 
 # Use an isolated state dir so we don't step on developer's live data.
 ISO_DIR=$(mktemp -d)
-export ALLAY_ACTIVE_SKILLS_DIR="$ISO_DIR/active-skills"
+export FAE_ACTIVE_SKILLS_DIR="$ISO_DIR/active-skills"
 
 cleanup() {
   rm -rf "$ISO_DIR" 2>/dev/null || true
@@ -25,7 +25,7 @@ cleanup() {
   rm -rf "${STATE_DIR}/metrics.jsonl.lock" "${STATE_DIR}/skill-metrics.jsonl.lock" 2>/dev/null || true
   [[ -n "${TF:-}" ]] && rm -f "$TF" 2>/dev/null
   [[ -n "${MT:-}" ]] && rm -f "$MT" 2>/dev/null
-  [[ -n "${SH:-}" ]] && rm -f "/tmp/allay-drift-${SH}.jsonl" "/tmp/allay-drift-cooldown-${SH}" 2>/dev/null
+  [[ -n "${SH:-}" ]] && rm -f "/tmp/fae-drift-${SH}.jsonl" "/tmp/fae-drift-cooldown-${SH}" 2>/dev/null
 }
 trap cleanup EXIT
 
@@ -37,7 +37,7 @@ echo "attribution test" > "$TF"
 MT=$(mktemp)
 echo '{"role":"user","content":"x"}' > "$MT"
 SH=$(md5sum "$MT" 2>/dev/null | cut -c1-8 || echo "test")
-rm -f "/tmp/allay-drift-${SH}.jsonl" "/tmp/allay-drift-cooldown-${SH}"
+rm -f "/tmp/fae-drift-${SH}.jsonl" "/tmp/fae-drift-cooldown-${SH}"
 
 INPUT=$(jq -n --arg t "$MT" --arg f "$TF" '{transcript_path:$t, cwd:"/tmp", tool_name:"Read", tool_input:{file_path:$f}, tool_result:{content:"hi"}, hook_event_name:"PostToolUse"}')
 
@@ -61,14 +61,14 @@ if [[ -f "${STATE_DIR}/skill-metrics.jsonl" ]]; then
 fi
 
 # ── 2. Register skill and fire hook → attributed ──
-bash "$SKILL_SCOPE" register flux:converge flux >/dev/null
+bash "$SKILL_SCOPE" register wixie:converge wixie >/dev/null
 
 printf "%s" "$INPUT" | CLAUDE_PLUGIN_ROOT="${REPO_ROOT}/plugins/context-guard" bash "$HOOK" >/dev/null 2>/dev/null || true
 
-# The new turn row should have skill=flux:converge
+# The new turn row should have skill=wixie:converge
 SKILL_VAL=$(grep '"event":"turn"' "${STATE_DIR}/metrics.jsonl" | tail -1 | jq -r '.skill // empty' 2>/dev/null)
-if [[ "$SKILL_VAL" != "flux:converge" ]]; then
-  echo "FAIL: expected skill=flux:converge after register, got '$SKILL_VAL'"
+if [[ "$SKILL_VAL" != "wixie:converge" ]]; then
+  echo "FAIL: expected skill=wixie:converge after register, got '$SKILL_VAL'"
   exit 1
 fi
 
@@ -96,13 +96,13 @@ fi
 
 # plugin field should be populated
 PLUGIN_VAL=$(printf "%s" "$ROW" | jq -r '.plugin')
-if [[ "$PLUGIN_VAL" != "flux" ]]; then
-  echo "FAIL: expected plugin=flux, got '$PLUGIN_VAL'"
+if [[ "$PLUGIN_VAL" != "wixie" ]]; then
+  echo "FAIL: expected plugin=wixie, got '$PLUGIN_VAL'"
   exit 1
 fi
 
 # ── 3. Unregister → future calls revert to manual ──
-bash "$SKILL_SCOPE" unregister flux:converge >/dev/null
+bash "$SKILL_SCOPE" unregister wixie:converge >/dev/null
 
 printf "%s" "$INPUT" | CLAUDE_PLUGIN_ROOT="${REPO_ROOT}/plugins/context-guard" bash "$HOOK" >/dev/null 2>/dev/null || true
 SKILL_VAL=$(grep '"event":"turn"' "${STATE_DIR}/metrics.jsonl" | tail -1 | jq -r '.skill // empty' 2>/dev/null)

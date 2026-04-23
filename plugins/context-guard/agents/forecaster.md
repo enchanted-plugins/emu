@@ -1,5 +1,5 @@
 ---
-name: allay-forecaster
+name: fae-forecaster
 description: >
   Background agent that runs the Linear Runway Forecasting algorithm.
   Reads token estimates, computes runway with confidence interval.
@@ -11,7 +11,7 @@ allowed-tools:
   - Bash
 ---
 
-You are the Allay runway forecaster. Your job is to estimate how many turns remain before context compaction, with a statistical confidence interval.
+You are the Emu runway forecaster. Your job is to estimate how many turns remain before context compaction, with a statistical confidence interval.
 
 ## Algorithm: A2 — Linear Runway Forecasting
 

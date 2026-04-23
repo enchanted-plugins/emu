@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Allay shared sanitization utilities
+# Emu shared sanitization utilities
 
 sanitize_path() {
   local path="$1"

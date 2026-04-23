@@ -8,7 +8,7 @@ REPO_ROOT="${SCRIPT_DIR}/../.."
 SKILL_SCOPE="${REPO_ROOT}/shared/scripts/skill-scope.sh"
 
 ISO=$(mktemp -d)
-export ALLAY_ACTIVE_SKILLS_DIR="$ISO"
+export FAE_ACTIVE_SKILLS_DIR="$ISO"
 
 cleanup() { rm -rf "$ISO" 2>/dev/null || true; }
 trap cleanup EXIT
@@ -69,45 +69,45 @@ if [[ "$CUR" != "manual" ]]; then
 fi
 
 # Parent
-eval "$(bash "$SKILL_SCOPE" register flux:converge flux)"
-if [[ -z "${ALLAY_SCOPE_ID:-}" ]]; then
-  echo "FAIL: register did not emit ALLAY_SCOPE_ID"
+eval "$(bash "$SKILL_SCOPE" register wixie:converge wixie)"
+if [[ -z "${FAE_SCOPE_ID:-}" ]]; then
+  echo "FAIL: register did not emit FAE_SCOPE_ID"
   exit 1
 fi
-if [[ "${ALLAY_SCOPE_DEPTH:-}" != "0" ]]; then
-  echo "FAIL: parent depth should be 0, got '${ALLAY_SCOPE_DEPTH}'"
+if [[ "${FAE_SCOPE_DEPTH:-}" != "0" ]]; then
+  echo "FAIL: parent depth should be 0, got '${FAE_SCOPE_DEPTH}'"
   exit 1
 fi
-PARENT_ID="$ALLAY_SCOPE_ID"
+PARENT_ID="$FAE_SCOPE_ID"
 
 # Child inherits parent via env
-eval "$(bash "$SKILL_SCOPE" register hornet:review hornet)"
-if [[ "${ALLAY_SCOPE_DEPTH:-}" != "1" ]]; then
-  echo "FAIL: child depth should be 1, got '${ALLAY_SCOPE_DEPTH}'"
+eval "$(bash "$SKILL_SCOPE" register raven:review raven)"
+if [[ "${FAE_SCOPE_DEPTH:-}" != "1" ]]; then
+  echo "FAIL: child depth should be 1, got '${FAE_SCOPE_DEPTH}'"
   exit 1
 fi
-if [[ "${ALLAY_SCOPE_PARENT:-}" != "$PARENT_ID" ]]; then
-  echo "FAIL: child parent should be '$PARENT_ID', got '${ALLAY_SCOPE_PARENT}'"
+if [[ "${FAE_SCOPE_PARENT:-}" != "$PARENT_ID" ]]; then
+  echo "FAIL: child parent should be '$PARENT_ID', got '${FAE_SCOPE_PARENT}'"
   exit 1
 fi
 
 # current returns the top of stack (most recent)
 CUR=$(bash "$SKILL_SCOPE" current)
-if [[ "$CUR" != "hornet:review" ]]; then
-  echo "FAIL: current should be top-of-stack 'hornet:review', got '$CUR'"
+if [[ "$CUR" != "raven:review" ]]; then
+  echo "FAIL: current should be top-of-stack 'raven:review', got '$CUR'"
   exit 1
 fi
 
 # unregister child → current falls back to parent
-bash "$SKILL_SCOPE" unregister hornet:review >/dev/null
+bash "$SKILL_SCOPE" unregister raven:review >/dev/null
 CUR=$(bash "$SKILL_SCOPE" current)
-if [[ "$CUR" != "flux:converge" ]]; then
-  echo "FAIL: after unregister child, current should be parent 'flux:converge', got '$CUR'"
+if [[ "$CUR" != "wixie:converge" ]]; then
+  echo "FAIL: after unregister child, current should be parent 'wixie:converge', got '$CUR'"
   exit 1
 fi
 
 # unregister parent → back to manual
-bash "$SKILL_SCOPE" unregister flux:converge >/dev/null
+bash "$SKILL_SCOPE" unregister wixie:converge >/dev/null
 CUR=$(bash "$SKILL_SCOPE" current)
 if [[ "$CUR" != "manual" ]]; then
   echo "FAIL: after unregister parent, current should be 'manual', got '$CUR'"

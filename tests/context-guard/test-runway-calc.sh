@@ -16,7 +16,7 @@ TEST_FILE=$(mktemp)
 echo "content" > "$TEST_FILE"
 
 SESSION_HASH=$(md5sum "$MOCK_TRANSCRIPT" 2>/dev/null | cut -c1-8 || echo "test")
-rm -f "/tmp/allay-drift-${SESSION_HASH}.jsonl" "/tmp/allay-drift-cooldown-${SESSION_HASH}"
+rm -f "/tmp/fae-drift-${SESSION_HASH}.jsonl" "/tmp/fae-drift-cooldown-${SESSION_HASH}"
 
 INPUT=$(jq -n \
   --arg transcript "$MOCK_TRANSCRIPT" \
@@ -27,24 +27,24 @@ INPUT=$(jq -n \
 printf "%s" "$INPUT" | CLAUDE_PLUGIN_ROOT="${REPO_ROOT}/plugins/context-guard" bash "$HOOK" >/dev/null 2>/dev/null || true
 
 # Verify cache file was created
-if [[ ! -f "/tmp/allay-drift-${SESSION_HASH}.jsonl" ]]; then
+if [[ ! -f "/tmp/fae-drift-${SESSION_HASH}.jsonl" ]]; then
   echo "FAIL: Session cache file not created"
   rm -f "$MOCK_TRANSCRIPT" "$TEST_FILE"
   exit 1
 fi
 
 # Verify cache has entries
-LINE_COUNT=$(wc -l < "/tmp/allay-drift-${SESSION_HASH}.jsonl" | tr -d ' ')
+LINE_COUNT=$(wc -l < "/tmp/fae-drift-${SESSION_HASH}.jsonl" | tr -d ' ')
 if [[ "$LINE_COUNT" -lt 1 ]]; then
   echo "FAIL: Session cache should have at least 1 entry, got $LINE_COUNT"
   rm -f "$MOCK_TRANSCRIPT" "$TEST_FILE"
-  rm -f "/tmp/allay-drift-${SESSION_HASH}.jsonl" "/tmp/allay-drift-cooldown-${SESSION_HASH}"
+  rm -f "/tmp/fae-drift-${SESSION_HASH}.jsonl" "/tmp/fae-drift-cooldown-${SESSION_HASH}"
   exit 1
 fi
 
 # Cleanup
 rm -f "$MOCK_TRANSCRIPT" "$TEST_FILE"
-rm -f "/tmp/allay-drift-${SESSION_HASH}.jsonl" "/tmp/allay-drift-cooldown-${SESSION_HASH}"
+rm -f "/tmp/fae-drift-${SESSION_HASH}.jsonl" "/tmp/fae-drift-cooldown-${SESSION_HASH}"
 rm -f "${STATE_DIR}/metrics.jsonl"
 rm -rf "${STATE_DIR}/metrics.jsonl.lock"
 

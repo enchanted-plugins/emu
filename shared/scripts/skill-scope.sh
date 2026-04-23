@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Allay A8 — Skill-Scoped Attribution
+# Emu A8 — Skill-Scoped Attribution
 #
 # Shared registration API for any enchanted-plugins skill. When a skill opens
-# (e.g. /flux:converge begins its 100-iteration loop), it calls:
+# (e.g. /wixie:converge begins its 100-iteration loop), it calls:
 #
 #     shared/scripts/skill-scope.sh register <skill_id> <plugin_name>
 #
@@ -11,7 +11,7 @@
 #     shared/scripts/skill-scope.sh unregister <skill_id>
 #
 # The context-guard PostToolUse hook reads the currently-active scope and tags
-# every metrics event with it, so /allay:analytics can show who spent what.
+# every metrics event with it, so /fae:analytics can show who spent what.
 #
 # Design notes (why these choices):
 #   - Stored as an array to support nested/concurrent skills — worktrees can run
@@ -20,7 +20,7 @@
 #   - Each scope gets a 16-hex-char invocation_id (systemd InvocationID pattern) —
 #     PIDs reuse, invocation IDs don't.
 #   - Stale eviction on every read: we drop entries whose PID is dead OR whose
-#     started_at + ALLAY_SKILL_TTL is past. Both guards — `kill -0` fails
+#     started_at + FAE_SKILL_TTL is past. Both guards — `kill -0` fails
 #     silently on MSYS/Cygwin for some PIDs, so the TTL is the safety net.
 #   - Atomic write: write to .tmp, validate JSON, rename. No flock — atomic
 #     mkdir lock per the brand standard.
@@ -32,8 +32,8 @@
 #     "version": 1,
 #     "skills": [
 #       {
-#         "skill_id": "flux:converge",
-#         "plugin": "flux",
+#         "skill_id": "wixie:converge",
+#         "plugin": "wixie",
 #         "invocation_id": "a1b2c3d4e5f67890",
 #         "parent_invocation_id": "" | "<id>",
 #         "depth": 0,
@@ -69,11 +69,11 @@ fi
 
 # ── Resolve state directory ──
 # Priority:
-#   1. ALLAY_ACTIVE_SKILLS_DIR env var (tests use this)
+#   1. FAE_ACTIVE_SKILLS_DIR env var (tests use this)
 #   2. CLAUDE_PLUGIN_ROOT env var + state/ (when called from a hook)
 #   3. <repo>/plugins/context-guard/state/ (sibling lookup from shared/)
-if [[ -n "${ALLAY_ACTIVE_SKILLS_DIR:-}" ]]; then
-  STATE_DIR="$ALLAY_ACTIVE_SKILLS_DIR"
+if [[ -n "${FAE_ACTIVE_SKILLS_DIR:-}" ]]; then
+  STATE_DIR="$FAE_ACTIVE_SKILLS_DIR"
 elif [[ -n "${CLAUDE_PLUGIN_ROOT:-}" ]] && [[ -d "${CLAUDE_PLUGIN_ROOT}" ]]; then
   STATE_DIR="${CLAUDE_PLUGIN_ROOT}/state"
   # If we were called from a non-context-guard plugin, redirect to context-guard.
@@ -95,7 +95,7 @@ else
 fi
 
 STATE_FILE="${STATE_DIR}/active-skills.json"
-LOCK_DIR="${STATE_FILE}${ALLAY_LOCK_SUFFIX}"
+LOCK_DIR="${STATE_FILE}${FAE_LOCK_SUFFIX}"
 
 # Ensure parent dir exists — acquire_lock uses `mkdir <dir>` (no -p), so the
 # parent must exist first, otherwise every call here returns before writing.
@@ -133,7 +133,7 @@ _sc_read_clean() {
 
   local now ttl
   now=$(date -u +%s)
-  ttl="${ALLAY_SKILL_TTL:-3600}"
+  ttl="${FAE_SKILL_TTL:-3600}"
 
   # Build a space-separated list of live PIDs to filter against.
   # We check each PID once (kill -0). Dead PIDs yield empty.
@@ -191,19 +191,19 @@ cmd_register() {
   fi
 
   # Owner PID: skill's parent (Claude), not this bash subshell.
-  local owner_pid="${ALLAY_SKILL_OWNER_PID:-$PPID}"
+  local owner_pid="${FAE_SKILL_OWNER_PID:-$PPID}"
   local invocation_id parent_id depth started_at started_epoch
   invocation_id=$(_sc_gen_invocation_id)
-  parent_id="${ALLAY_SCOPE_ID:-}"
-  depth="${ALLAY_SCOPE_DEPTH:-0}"
+  parent_id="${FAE_SCOPE_ID:-}"
+  depth="${FAE_SCOPE_DEPTH:-0}"
   if [[ -n "$parent_id" ]]; then depth=$((depth + 1)); fi
   started_at=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
   started_epoch=$(date -u +%s)
 
   # Worktree + session context (best effort; may be empty if session-init not loaded).
   local worktree session_id
-  worktree="${ALLAY_WORKTREE_REL:-}"
-  session_id="${ALLAY_SESSION_ID:-}"
+  worktree="${FAE_WORKTREE_REL:-}"
+  session_id="${FAE_SESSION_ID:-}"
 
   acquire_lock "$LOCK_DIR" || return 1
 
@@ -236,14 +236,14 @@ cmd_register() {
   #   eval "$(skill-scope.sh register ...)"
   # Values are bounded character sets (hex/int/skill_id), so no shell-quoting
   # is required.
-  printf "export ALLAY_SCOPE_ID=%s\nexport ALLAY_SCOPE_PARENT=%s\nexport ALLAY_SCOPE_DEPTH=%s\nexport ALLAY_SCOPE_SKILL=%s\n" \
+  printf "export FAE_SCOPE_ID=%s\nexport FAE_SCOPE_PARENT=%s\nexport FAE_SCOPE_DEPTH=%s\nexport FAE_SCOPE_SKILL=%s\n" \
     "$invocation_id" "$parent_id" "$depth" "$skill_id"
 }
 
 cmd_unregister() {
   local skill_id="${1:-}"
   # Optional explicit invocation_id (2nd arg only — we don't auto-use
-  # ALLAY_SCOPE_ID because in nested flows it may refer to a child scope).
+  # FAE_SCOPE_ID because in nested flows it may refer to a child scope).
   local invocation_id="${2:-}"
   if [[ -z "$skill_id" ]]; then
     printf "usage: skill-scope.sh unregister <skill_id> [invocation_id]\n" >&2
@@ -294,7 +294,7 @@ cmd_current() {
 # can parse with `while IFS='=' read -r k v`.
 # tr -d '\r' defends against jq's CRLF output on Windows stdout.
 cmd_current_env() {
-  acquire_lock "$LOCK_DIR" || { printf "ALLAY_SCOPE_SKILL=manual\nALLAY_SCOPE_PLUGIN=\nALLAY_SCOPE_ID=\nALLAY_SCOPE_PARENT=\nALLAY_SCOPE_DEPTH=0\n"; return 0; }
+  acquire_lock "$LOCK_DIR" || { printf "FAE_SCOPE_SKILL=manual\nFAE_SCOPE_PLUGIN=\nFAE_SCOPE_ID=\nFAE_SCOPE_PARENT=\nFAE_SCOPE_DEPTH=0\n"; return 0; }
   local cleaned
   cleaned=$(_sc_read_clean)
   _sc_write_atomic "$cleaned" || true
@@ -302,11 +302,11 @@ cmd_current_env() {
 
   printf "%s" "$cleaned" | jq -r '
     (.skills[-1] // {skill_id:"manual", plugin:"", invocation_id:"", parent_invocation_id:"", depth:0}) as $t |
-    "ALLAY_SCOPE_SKILL=\($t.skill_id // "manual")",
-    "ALLAY_SCOPE_PLUGIN=\($t.plugin // "")",
-    "ALLAY_SCOPE_ID=\($t.invocation_id // "")",
-    "ALLAY_SCOPE_PARENT=\($t.parent_invocation_id // "")",
-    "ALLAY_SCOPE_DEPTH=\($t.depth // 0)"
+    "FAE_SCOPE_SKILL=\($t.skill_id // "manual")",
+    "FAE_SCOPE_PLUGIN=\($t.plugin // "")",
+    "FAE_SCOPE_ID=\($t.invocation_id // "")",
+    "FAE_SCOPE_PARENT=\($t.parent_invocation_id // "")",
+    "FAE_SCOPE_DEPTH=\($t.depth // 0)"
   ' 2>/dev/null | tr -d '\r'
 }
 

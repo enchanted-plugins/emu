@@ -1,4 +1,4 @@
-# Allay Architecture
+# Emu Architecture
 
 > Auto-generated from codebase by `generate.py`. Run `python docs/architecture/generate.py` to regenerate.
 
@@ -57,7 +57,7 @@ graph TD
 
 ## Data Flow
 
-What events each plugin logs and how they feed into `/allay:report`.
+What events each plugin logs and how they feed into `/fae:report`.
 
 ```mermaid
 graph TB
@@ -72,7 +72,7 @@ graph TB
     sk_metrics["state-keeper/state/metrics.jsonl<br/><small>checkpoint_saved</small>"]
     ts_metrics["token-saver/state/metrics.jsonl<br/><small>bash_compressed<br/>duplicate_blocked<br/>delta_read<br/>result_aged</small>"]
     Bash --> ts_metrics
-    report["📊 /allay:report<br/>Aggregates all metrics"]
+    report["📊 /fae:report<br/>Aggregates all metrics"]
     cg_metrics --> report
     sk_metrics --> report
     ts_metrics --> report

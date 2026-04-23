@@ -1,9 +1,9 @@
 ---
-name: allay:doctor
-description: Diagnostic self-check for all Allay plugins.
+name: fae:doctor
+description: Diagnostic self-check for all Emu plugins.
 ---
 
-When the user runs `/allay:doctor`, perform a diagnostic check on the Allay installation:
+When the user runs `/fae:doctor`, perform a diagnostic check on the Emu installation:
 
 ## Checks
 
@@ -17,7 +17,7 @@ When the user runs `/allay:doctor`, perform a diagnostic check on the Allay inst
 Show `[✓]` or `[✗]` per check. For failures, include a fix command:
 
 ```
-Allay Doctor
+Emu Doctor
 ────────────────────────────
 [✓] jq installed (v1.7)
 [✓] state-keeper hook executable

@@ -4,14 +4,14 @@
 
 ## Install
 
-Part of the [Allay](../..) bundle. The simplest install is the `full` meta-plugin, which pulls in all 3 Allay plugins via dependency resolution:
+Part of the [Emu](../..) bundle. The simplest install is the `full` meta-plugin, which pulls in all 3 Emu plugins via dependency resolution:
 
 ```
-/plugin marketplace add enchanted-plugins/allay
-/plugin install full@allay
+/plugin marketplace add enchanted-plugins/fae
+/plugin install full@fae
 ```
 
-To install this plugin on its own: `/plugin install allay-token-saver@allay`. `token-saver`'s compression metrics feed `context-guard`'s savings report, and the tokens it reclaims extend the runway that `state-keeper` checkpoints defend across compactions — so on its own the wins are invisible and compactions stay uncheckpointed.
+To install this plugin on its own: `/plugin install fae-token-saver@fae`. `token-saver`'s compression metrics feed `context-guard`'s savings report, and the tokens it reclaims extend the runway that `state-keeper` checkpoints defend across compactions — so on its own the wins are invisible and compactions stay uncheckpointed.
 
 ## Components
 

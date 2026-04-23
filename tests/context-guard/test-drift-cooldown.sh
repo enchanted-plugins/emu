@@ -13,7 +13,7 @@ MOCK_TRANSCRIPT=$(mktemp)
 echo '{"role":"user","content":"test"}' > "$MOCK_TRANSCRIPT"
 
 SESSION_HASH=$(md5sum "$MOCK_TRANSCRIPT" 2>/dev/null | cut -c1-8 || echo "test")
-rm -f "/tmp/allay-drift-${SESSION_HASH}.jsonl" "/tmp/allay-drift-cooldown-${SESSION_HASH}"
+rm -f "/tmp/fae-drift-${SESSION_HASH}.jsonl" "/tmp/fae-drift-cooldown-${SESSION_HASH}"
 
 INPUT=$(jq -n \
   --arg transcript "$MOCK_TRANSCRIPT" \
@@ -32,14 +32,14 @@ for i in 4 5; do
   if [[ "$STDERR_OUT" == *"Drift Alert"* ]]; then
     echo "FAIL: Read #$i should be within cooldown (no alert)"
     rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT"
-    rm -f "/tmp/allay-drift-${SESSION_HASH}.jsonl" "/tmp/allay-drift-cooldown-${SESSION_HASH}"
+    rm -f "/tmp/fae-drift-${SESSION_HASH}.jsonl" "/tmp/fae-drift-cooldown-${SESSION_HASH}"
     exit 1
   fi
 done
 
 # Cleanup
 rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT"
-rm -f "/tmp/allay-drift-${SESSION_HASH}.jsonl" "/tmp/allay-drift-cooldown-${SESSION_HASH}"
+rm -f "/tmp/fae-drift-${SESSION_HASH}.jsonl" "/tmp/fae-drift-cooldown-${SESSION_HASH}"
 rm -f "${REPO_ROOT}/plugins/context-guard/state/metrics.jsonl"
 rm -rf "${REPO_ROOT}/plugins/context-guard/state/metrics.jsonl.lock"
 

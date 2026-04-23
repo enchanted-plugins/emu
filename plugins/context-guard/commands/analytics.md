@@ -1,11 +1,11 @@
 ---
-name: allay:analytics
+name: fae:analytics
 description: >
   Per-tool token analytics for the current session.
   Shows which tools consume the most tokens and suggests optimizations.
 ---
 
-When the user runs `/allay:analytics`:
+When the user runs `/fae:analytics`:
 
 ## Data Source
 
@@ -17,7 +17,7 @@ Use `grep "\"event\":\"turn\"" metrics.jsonl` to pre-filter (never `jq -s`).
 ## Calculations
 
 1. **Per-tool aggregation**: Group turn entries by `tool`. For each tool, count calls and sum `tokens_est`.
-2. **Top consumers**: Find the 3 tool+target combinations consuming the most tokens. Include specific file paths or commands where available from the drift cache at `/tmp/allay-drift-*.jsonl`.
+2. **Top consumers**: Find the 3 tool+target combinations consuming the most tokens. Include specific file paths or commands where available from the drift cache at `/tmp/fae-drift-*.jsonl`.
 3. **Session totals**: Sum all `tokens_est`. Estimate remaining from 200K context window.
 4. **Savings credit**: Cross-reference with `duplicate_blocked` and `bash_compressed` events to show tokens saved.
 
@@ -63,8 +63,8 @@ Format:
 
 ```
   SKILL BREAKDOWN (this session)
-    flux:converge     14 calls   ~8,200 tokens  (15%)
-    hornet:review      3 calls   ~1,100 tokens   (2%)
+    wixie:converge     14 calls   ~8,200 tokens  (15%)
+    raven:review      3 calls   ~1,100 tokens   (2%)
     manual            83 calls  ~44,300 tokens  (83%)
 ```
 

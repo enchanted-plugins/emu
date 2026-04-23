@@ -1,9 +1,9 @@
 {
-  "name": "allay-context-guard",
-  "description": "The eyes of Allay. Drift Alert, Runway, Analytics, and Report.",
+  "name": "fae-context-guard",
+  "description": "The eyes of Emu. Drift Alert, Runway, Analytics, and Report.",
   "version": "2.0.0",
   "author": {
-    "name": "Allay"
+    "name": "Emu"
   },
   "license": "MIT",
   "keywords": [

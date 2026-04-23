@@ -1,13 +1,13 @@
 {
   "name": "full",
-  "description": "Meta-plugin that installs every Allay plugin at once via dependency resolution. Installs: allay-context-guard, allay-state-keeper, allay-token-saver.",
+  "description": "Meta-plugin that installs every Emu plugin at once via dependency resolution. Installs: fae-context-guard, fae-state-keeper, fae-token-saver.",
   "version": "2.0.0",
-  "author": { "name": "Allay" },
+  "author": { "name": "Emu" },
   "license": "MIT",
   "keywords": ["meta", "bundle", "install-all"],
   "dependencies": [
-    "allay-context-guard",
-    "allay-state-keeper",
-    "allay-token-saver"
+    "fae-context-guard",
+    "fae-state-keeper",
+    "fae-token-saver"
   ]
 }

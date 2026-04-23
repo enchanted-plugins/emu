@@ -17,7 +17,7 @@ MOCK_TRANSCRIPT=$(mktemp)
 echo '{"role":"user","content":"test"}' > "$MOCK_TRANSCRIPT"
 
 SESSION_HASH=$(md5sum "$MOCK_TRANSCRIPT" 2>/dev/null | cut -c1-8 || echo "test")
-rm -f "/tmp/allay-drift-${SESSION_HASH}.jsonl" "/tmp/allay-drift-cooldown-${SESSION_HASH}"
+rm -f "/tmp/fae-drift-${SESSION_HASH}.jsonl" "/tmp/fae-drift-cooldown-${SESSION_HASH}"
 
 INPUT=$(jq -n \
   --arg transcript "$MOCK_TRANSCRIPT" \
@@ -31,14 +31,14 @@ printf "%s" "$INPUT" | CLAUDE_PLUGIN_ROOT="${REPO_ROOT}/plugins/context-guard" b
 if [[ ! -f "${STATE_DIR}/metrics.jsonl" ]]; then
   echo "FAIL: metrics.jsonl should be created"
   rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT"
-  rm -f "/tmp/allay-drift-${SESSION_HASH}.jsonl" "/tmp/allay-drift-cooldown-${SESSION_HASH}"
+  rm -f "/tmp/fae-drift-${SESSION_HASH}.jsonl" "/tmp/fae-drift-cooldown-${SESSION_HASH}"
   exit 1
 fi
 
 if ! grep -q '"event":"turn"' "${STATE_DIR}/metrics.jsonl"; then
   echo "FAIL: metrics.jsonl should contain turn event"
   rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT"
-  rm -f "/tmp/allay-drift-${SESSION_HASH}.jsonl" "/tmp/allay-drift-cooldown-${SESSION_HASH}"
+  rm -f "/tmp/fae-drift-${SESSION_HASH}.jsonl" "/tmp/fae-drift-cooldown-${SESSION_HASH}"
   exit 1
 fi
 
@@ -48,14 +48,14 @@ TOKENS_EST=$(grep '"event":"turn"' "${STATE_DIR}/metrics.jsonl" | head -1 | jq -
 if [[ -z "$TOKENS_EST" ]] || [[ "$TOKENS_EST" == "null" ]]; then
   echo "FAIL: turn event should have tokens_est field"
   rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT"
-  rm -f "/tmp/allay-drift-${SESSION_HASH}.jsonl" "/tmp/allay-drift-cooldown-${SESSION_HASH}"
+  rm -f "/tmp/fae-drift-${SESSION_HASH}.jsonl" "/tmp/fae-drift-cooldown-${SESSION_HASH}"
   exit 1
 fi
 
 if [[ "$TOKENS_EST" -lt 50 ]]; then
   echo "FAIL: tokens_est should be at least 50 (minimum), got $TOKENS_EST"
   rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT"
-  rm -f "/tmp/allay-drift-${SESSION_HASH}.jsonl" "/tmp/allay-drift-cooldown-${SESSION_HASH}"
+  rm -f "/tmp/fae-drift-${SESSION_HASH}.jsonl" "/tmp/fae-drift-cooldown-${SESSION_HASH}"
   exit 1
 fi
 
@@ -65,13 +65,13 @@ TOOL_NAME=$(grep '"event":"turn"' "${STATE_DIR}/metrics.jsonl" | head -1 | jq -r
 if [[ "$TOOL_NAME" != "Read" ]]; then
   echo "FAIL: turn event tool should be 'Read', got '$TOOL_NAME'"
   rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT"
-  rm -f "/tmp/allay-drift-${SESSION_HASH}.jsonl" "/tmp/allay-drift-cooldown-${SESSION_HASH}"
+  rm -f "/tmp/fae-drift-${SESSION_HASH}.jsonl" "/tmp/fae-drift-cooldown-${SESSION_HASH}"
   exit 1
 fi
 
 # Cleanup
 rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT"
-rm -f "/tmp/allay-drift-${SESSION_HASH}.jsonl" "/tmp/allay-drift-cooldown-${SESSION_HASH}"
+rm -f "/tmp/fae-drift-${SESSION_HASH}.jsonl" "/tmp/fae-drift-cooldown-${SESSION_HASH}"
 rm -f "${STATE_DIR}/metrics.jsonl"
 rm -rf "${STATE_DIR}/metrics.jsonl.lock"
 

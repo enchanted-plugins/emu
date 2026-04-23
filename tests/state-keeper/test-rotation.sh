@@ -15,7 +15,7 @@ TEST_FILE=$(mktemp)
 LOCK_DIR="${TEST_FILE}.lock"
 
 # Write enough data to exceed the max (use a small override for testing)
-ALLAY_MAX_METRICS_BYTES=500
+FAE_MAX_METRICS_BYTES=500
 
 for i in $(seq 1 100); do
   ENTRY=$(jq -cn --arg i "$i" '{event: "test", idx: $i}')

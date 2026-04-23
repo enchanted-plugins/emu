@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Allay self-learning system — Bayesian Strategy Accumulation
+# Emu self-learning system — Bayesian Strategy Accumulation
 # Logs session data, accumulates strategy success rates across sessions,
 # detects patterns, persists to learnings.json.
 # Not time-critical — called from report-gen.sh or save-checkpoint.sh.
@@ -51,9 +51,9 @@ _l_SHARED_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 if [[ -f "${_l_SHARED_DIR}/scripts/session-init.sh" ]]; then
   # Use a sub-shell to avoid polluting this script's env.
   LEARNINGS_GLOBAL=$(
-    ALLAY_INIT_CWD="$PLUGINS_DIR" \
-    ALLAY_PLUGIN_STATE_DIR="${PLUGINS_DIR}/context-guard/state" \
-    bash -c "source '${_l_SHARED_DIR}/scripts/session-init.sh' >/dev/null 2>&1; printf '%s' \"\$ALLAY_GLOBAL_DATA_DIR\"" 2>/dev/null | tr -d '\r'
+    FAE_INIT_CWD="$PLUGINS_DIR" \
+    FAE_PLUGIN_STATE_DIR="${PLUGINS_DIR}/context-guard/state" \
+    bash -c "source '${_l_SHARED_DIR}/scripts/session-init.sh' >/dev/null 2>&1; printf '%s' \"\$FAE_GLOBAL_DATA_DIR\"" 2>/dev/null | tr -d '\r'
   )
 fi
 unset _l_SHARED_DIR
@@ -74,7 +74,7 @@ if [[ "$LEARNINGS_FILE" != "$LEARNINGS_LOCAL" ]] \
 fi
 
 LEARNINGS_TMP="${LEARNINGS_FILE}.tmp"
-LEARNINGS_LOCK="${LEARNINGS_FILE}${ALLAY_LOCK_SUFFIX}"
+LEARNINGS_LOCK="${LEARNINGS_FILE}${FAE_LOCK_SUFFIX}"
 
 # ── EMA learning rate ──
 ALPHA="0.3"

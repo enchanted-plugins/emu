@@ -8,7 +8,7 @@ REPO_ROOT="${SCRIPT_DIR}/../.."
 SKILL_SCOPE="${REPO_ROOT}/shared/scripts/skill-scope.sh"
 
 ISO=$(mktemp -d)
-export ALLAY_ACTIVE_SKILLS_DIR="$ISO"
+export FAE_ACTIVE_SKILLS_DIR="$ISO"
 
 cleanup() { rm -rf "$ISO" 2>/dev/null || true; }
 trap cleanup EXIT
@@ -92,7 +92,7 @@ cat > "$ISO/active-skills.json" <<JSON
 }
 JSON
 
-CUR=$(ALLAY_SKILL_TTL=3600 bash "$SKILL_SCOPE" current)
+CUR=$(FAE_SKILL_TTL=3600 bash "$SKILL_SCOPE" current)
 if [[ "$CUR" != "manual" ]]; then
   echo "FAIL: TTL-aged entry (live pid but >TTL old) should be evicted, got '$CUR'"
   exit 1

@@ -1,18 +1,18 @@
 ---
-name: allay:report
+name: fae:report
 description: >
   Token savings + drift alert dashboard for this session.
-  Aggregates metrics from all Allay plugins. Use after
+  Aggregates metrics from all Emu plugins. Use after
   any session, before context gets low, or on request.
 argument-hint: "[--global]"
 ---
 
-When the user runs `/allay:report`, generate a session report by reading metrics from all Allay plugin state directories.
+When the user runs `/fae:report`, generate a session report by reading metrics from all Emu plugin state directories.
 
 ## Flags
 
 - `--global` — A9 unified view across ALL worktrees of this repo. Reads from
-  the XDG global dir (`${XDG_STATE_HOME:-~/.local/state}/allay/<repo_id>/`),
+  the XDG global dir (`${XDG_STATE_HOME:-~/.local/state}/fae/<repo_id>/`),
   merging every `skill-metrics-global.*.jsonl` shard. Shows one totals row
   that spans every concurrent Claude Code session on this repo.
 
@@ -25,14 +25,14 @@ Default (no flag) — local session only:
 - `${CLAUDE_PLUGIN_ROOT}/state/skill-metrics.jsonl` (A8 skill attribution, if present)
 
 `--global` — adds unified cross-worktree data:
-- `${XDG_STATE_HOME:-~/.local/state}/allay/<repo_id>/skill-metrics-global.*.jsonl`
+- `${XDG_STATE_HOME:-~/.local/state}/fae/<repo_id>/skill-metrics-global.*.jsonl`
   (one shard per PID; read all, merge by `ts`)
 
 ## Output Format
 
 ```
 ══════════════════════════════════════
- ALLAY SESSION REPORT
+ FAE SESSION REPORT
 ══════════════════════════════════════
 
  ── Worktree Overview (A9) ───────────
@@ -80,7 +80,7 @@ Default (no flag) — local session only:
 
 ## Worktree Overview rules (A9)
 
-8. Only render the WORKTREE OVERVIEW section if `grep -hE '"worktree":"[^"]+"' $XDG_STATE_HOME/allay/<repo_id>/skill-metrics-global.*.jsonl | sort -u` returns 2+ distinct worktrees. A single-worktree session doesn't need it.
+8. Only render the WORKTREE OVERVIEW section if `grep -hE '"worktree":"[^"]+"' $XDG_STATE_HOME/fae/<repo_id>/skill-metrics-global.*.jsonl | sort -u` returns 2+ distinct worktrees. A single-worktree session doesn't need it.
 9. Rows sorted by token total descending.
 10. The main worktree is labeled `(main)`. Everything else `(worktree)`. Label column is fixed-width.
 11. `--global` flag forces the section to render, even if only one worktree is active, and additionally lists sessions observed in the global dir (not just the current one).

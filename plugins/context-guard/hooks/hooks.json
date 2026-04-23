@@ -1,5 +1,5 @@
 {
-  "description": "Allay context-guard: drift detection and token estimation after every tool call",
+  "description": "Emu context-guard: drift detection and token estimation after every tool call",
   "hooks": {
     "PostToolUse": [
       {

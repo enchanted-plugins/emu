@@ -1,19 +1,19 @@
 # Claude Code Configuration
 
-This directory contains example Claude Code configuration snippets for use with Allay.
+This directory contains example Claude Code configuration snippets for use with Emu.
 
 ## Installing Plugins
 
-After cloning the Allay repo, add plugins to Claude Code:
+After cloning the Emu repo, add plugins to Claude Code:
 
 ```bash
 # Add the marketplace (recommended)
-/plugin marketplace add /path/to/allay
+/plugin marketplace add /path/to/fae
 
 # Or add individual plugins
-/plugin add /path/to/allay/plugins/context-guard
-/plugin add /path/to/allay/plugins/state-keeper
-/plugin add /path/to/allay/plugins/token-saver
+/plugin add /path/to/fae/plugins/context-guard
+/plugin add /path/to/fae/plugins/state-keeper
+/plugin add /path/to/fae/plugins/token-saver
 ```
 
 ## Recommended Order
