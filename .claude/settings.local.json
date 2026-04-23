@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(python -m pip install weasyprint)",
-      "Read(//c/git/enchanted-skills/wixie/docs/**)"
-    ]
-  }
-}
