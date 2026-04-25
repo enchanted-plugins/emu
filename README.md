@@ -251,7 +251,7 @@ $XDG_DATA_HOME/emu/<repo_id>/        # A9 — long-lived learnings
 
 ## Roadmap
 
-Tracked in [docs/ROADMAP.md](docs/ROADMAP.md) and the shared [ecosystem map](https://github.com/enchanted-plugins/wixie/blob/main/docs/ecosystem.md). For upcoming work specific to Emu, see issues tagged [roadmap](https://github.com/enchanted-plugins/emu/labels/roadmap).
+Tracked in [docs/ROADMAP.md](docs/ROADMAP.md) and the shared [ecosystem map](docs/ecosystem.md). For upcoming work specific to Emu, see issues tagged [roadmap](https://github.com/enchanted-plugins/emu/labels/roadmap).
 
 ## The Science Behind Emu
 
