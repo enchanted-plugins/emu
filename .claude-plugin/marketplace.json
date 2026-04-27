@@ -15,19 +15,19 @@
       "category": "meta"
     },
     {
-      "name": "emu-state-keeper",
+      "name": "state-keeper",
       "source": "./plugins/state-keeper",
       "description": "Preserves Claude Code context across compactions. Writes checkpoint before compaction wipes context. Auto-restores after compaction.",
       "category": "development"
     },
     {
-      "name": "emu-token-saver",
+      "name": "token-saver",
       "source": "./plugins/token-saver",
       "description": "Reduces token usage by compressing verbose tool outputs, blocking duplicate file reads, delta mode for re-reads, and output efficiency instructions.",
       "category": "development"
     },
     {
-      "name": "emu-context-guard",
+      "name": "context-guard",
       "source": "./plugins/context-guard",
       "description": "The eyes of Emu. Drift Alert catches Claude spinning in circles. Runway forecasts turns until compaction. Analytics shows per-tool token consumption. Report proves exact savings.",
       "category": "development"
