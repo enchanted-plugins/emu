@@ -51,7 +51,7 @@ Not for:
 - [Commands](#commands)
 - [Compression Rules (15)](#compression-rules-15)
 - [vs Everything Else](#vs-everything-else)
-- [Agent Conduct (9 Modules)](#agent-conduct-9-modules)
+- [Agent Conduct (11 Modules)](#agent-conduct-11-modules)
 - [Architecture](#architecture)
 - [Acknowledgments](#acknowledgments)
 - [Versioning & release cadence](#versioning--release-cadence)
@@ -415,7 +415,7 @@ Bypass: prefix with `FULL:` to skip compression.
 Combined: 30-45% token reduction. Not 70%. Honest numbers.
 Plus the only tool that catches Claude going in circles — and learns from it.
 
-## Agent Conduct (9 Modules)
+## Agent Conduct (11 Modules)
 
 Every skill inherits a reusable behavioral contract from [shared/](shared/) — loaded once into [CLAUDE.md](CLAUDE.md), applied across all plugins. This is how Claude *acts* inside Emu: deterministic, surgical, verifiable. Not a suggestion; a contract.
 
@@ -430,6 +430,8 @@ Every skill inherits a reusable behavioral contract from [shared/](shared/) — 
 | [skill-authoring.md](shared/conduct/skill-authoring.md) | SKILL.md frontmatter discipline, discovery test |
 | [hooks.md](shared/conduct/hooks.md) | Advisory-only hooks, injection over denial, fail-open |
 | [precedent.md](shared/conduct/precedent.md) | Log self-observed failures to `state/precedent-log.md`; consult before risky steps |
+| [tier-sizing.md](shared/conduct/tier-sizing.md) | Prompt verbosity scales inversely with model tier; Haiku needs mechanical steps, Opus runs on intent |
+| [web-fetch.md](shared/conduct/web-fetch.md) | External URL handling: cache, dedup, budget; WebFetch is Haiku-tier-only |
 
 ## Architecture
 
