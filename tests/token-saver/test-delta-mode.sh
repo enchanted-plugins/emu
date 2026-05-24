@@ -56,12 +56,23 @@ if [[ "$STDERR_OUT" == *"Delta mode"* ]] || [[ "$STDERR_OUT" == *"MODIFIED"* ]] 
   true
 fi
 
-# Third read — file unchanged since second read, should block (exit 2)
+# Third read — file unchanged since second read. The hook is advisory-only
+# (shared/conduct/hooks.md): it must exit 0 and emit "Would have blocked"
+# on stderr instead of hard-blocking with exit 2.
 EXIT3=0
-printf "%s" "$INPUT" | CLAUDE_PLUGIN_ROOT="${REPO_ROOT}/plugins/token-saver" bash "$HOOK" >/dev/null 2>/dev/null || EXIT3=$?
+STDERR_OUT3=$(printf "%s" "$INPUT" | CLAUDE_PLUGIN_ROOT="${REPO_ROOT}/plugins/token-saver" bash "$HOOK" 2>&1 >/dev/null) || EXIT3=$?
 
-if [[ $EXIT3 -ne 2 ]]; then
-  echo "FAIL: Third read of unchanged file should exit 2, got $EXIT3"
+if [[ $EXIT3 -ne 0 ]]; then
+  echo "FAIL: Duplicate-read advisory should exit 0 (advisory-only), got $EXIT3"
+  rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT"
+  rm -f "/tmp/emu-reads-${SESSION_HASH}.jsonl"
+  rm -rf "/tmp/emu-delta-${SESSION_HASH}"
+  exit 1
+fi
+
+if ! printf "%s" "$STDERR_OUT3" | grep -q "Would have blocked"; then
+  echo "FAIL: Third read should emit 'Would have blocked' advisory on stderr"
+  echo "stderr was: $STDERR_OUT3"
   rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT"
   rm -f "/tmp/emu-reads-${SESSION_HASH}.jsonl"
   rm -rf "/tmp/emu-delta-${SESSION_HASH}"

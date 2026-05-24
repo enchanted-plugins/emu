@@ -34,12 +34,21 @@ if [[ $EXIT1 -ne 0 ]]; then
   exit 1
 fi
 
-# Second read of same unchanged file should block (exit 2)
+# Second read of same unchanged file: hook is advisory-only per
+# shared/conduct/hooks.md and the token-saver README — it must exit 0 and
+# emit a "Would have blocked" advisory on stderr (not exit 2 / hard block).
 EXIT2=0
-printf "%s" "$INPUT" | CLAUDE_PLUGIN_ROOT="${REPO_ROOT}/plugins/token-saver" bash "$HOOK" >/dev/null 2>/dev/null || EXIT2=$?
+STDERR_OUT=$(printf "%s" "$INPUT" | CLAUDE_PLUGIN_ROOT="${REPO_ROOT}/plugins/token-saver" bash "$HOOK" 2>&1 >/dev/null) || EXIT2=$?
 
-if [[ $EXIT2 -ne 2 ]]; then
-  echo "FAIL: Second read of unchanged file should exit 2, got $EXIT2"
+if [[ $EXIT2 -ne 0 ]]; then
+  echo "FAIL: Duplicate read advisory should exit 0 (advisory-only), got $EXIT2"
+  rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT" "/tmp/emu-reads-${SESSION_HASH}.jsonl"
+  exit 1
+fi
+
+if ! printf "%s" "$STDERR_OUT" | grep -q "Would have blocked"; then
+  echo "FAIL: Duplicate read should emit 'Would have blocked' advisory on stderr"
+  echo "stderr was: $STDERR_OUT"
   rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT" "/tmp/emu-reads-${SESSION_HASH}.jsonl"
   exit 1
 fi

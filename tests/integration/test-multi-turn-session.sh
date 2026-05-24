@@ -76,12 +76,23 @@ READ_POST=$(jq -n \
 
 printf "%s" "$READ_POST" | CLAUDE_PLUGIN_ROOT="${REPO_ROOT}/plugins/context-guard" bash "$CG_HOOK" >/dev/null 2>/dev/null || true
 
-# ── Turn 3: Duplicate read (token-saver blocks) ──
+# ── Turn 3: Duplicate read (token-saver emits advisory but does NOT block) ──
+# Per shared/conduct/hooks.md the hook is advisory-only: it must exit 0 and
+# print "Would have blocked: duplicate Read of ..." on stderr. Exit 2 (hard
+# block) was the pre-refactor semantic; the test now asserts the documented
+# advisory contract.
 EXIT_READ2=0
-printf "%s" "$READ_INPUT" | CLAUDE_PLUGIN_ROOT="${REPO_ROOT}/plugins/token-saver" bash "$TS_DEDUP" >/dev/null 2>/dev/null || EXIT_READ2=$?
+STDERR_READ2=$(printf "%s" "$READ_INPUT" | CLAUDE_PLUGIN_ROOT="${REPO_ROOT}/plugins/token-saver" bash "$TS_DEDUP" 2>&1 >/dev/null) || EXIT_READ2=$?
 
-if [[ $EXIT_READ2 -ne 2 ]]; then
-  echo "FAIL: Duplicate read should be blocked (exit 2), got $EXIT_READ2"
+if [[ $EXIT_READ2 -ne 0 ]]; then
+  echo "FAIL: Duplicate read advisory should exit 0 (advisory-only), got $EXIT_READ2"
+  rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT"
+  exit 1
+fi
+
+if ! printf "%s" "$STDERR_READ2" | grep -q "Would have blocked"; then
+  echo "FAIL: Duplicate read should emit 'Would have blocked' advisory on stderr"
+  echo "stderr was: $STDERR_READ2"
   rm -f "$TEST_FILE" "$MOCK_TRANSCRIPT"
   exit 1
 fi

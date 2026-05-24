@@ -33,7 +33,14 @@ _si_compute_repo_id() {
   local cwd="${1:-$PWD}"
   local root_commit=""
   if command -v git >/dev/null 2>&1; then
-    root_commit=$(cd "$cwd" && git rev-list --max-parents=0 HEAD 2>/dev/null | head -n 1 || true)
+    # Belt-and-suspenders: confirm we are inside a git work tree before
+    # calling rev-list. On Windows, `git rev-list HEAD` against a non-git
+    # temp dir can stall waiting on the filesystem-watcher subprocess; the
+    # explicit rev-parse short-circuit converts that hang into an instant
+    # "skip" instead.
+    if (cd "$cwd" && git rev-parse --git-dir >/dev/null 2>&1); then
+      root_commit=$(cd "$cwd" && git rev-list --max-parents=0 HEAD 2>/dev/null | head -n 1 || true)
+    fi
   fi
   if [[ -z "$root_commit" ]]; then
     # Fallback: hash of absolute toplevel path (worktree-specific but deterministic)
@@ -72,6 +79,15 @@ _si_resolve_worktree() {
   EMU_WORKTREE_REL="."
 
   if ! command -v git >/dev/null 2>&1; then
+    EMU_WORKTREE_PATH="$cwd"
+    EMU_MAIN_WORKTREE="$cwd"
+    return 0
+  fi
+
+  # Same guard as compute_repo_id: if cwd isn't a git work tree, skip the
+  # rev-parse / worktree-list calls outright (they can hang on Windows when
+  # the dir is a stale checkout marker).
+  if ! (cd "$cwd" && git rev-parse --git-dir >/dev/null 2>&1); then
     EMU_WORKTREE_PATH="$cwd"
     EMU_MAIN_WORKTREE="$cwd"
     return 0
