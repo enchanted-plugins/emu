@@ -1,0 +1,33 @@
+{
+  "name": "context-guard",
+  "version": "2.0.0",
+  "description": "The eyes of Emu. Drift Alert, Runway, Analytics, and Report.",
+  "author": {
+    "name": "Enchanter Labs"
+  },
+  "license": "MIT",
+  "keywords": [
+    "drift",
+    "runway",
+    "context",
+    "monitoring",
+    "alerts",
+    "analytics"
+  ],
+  "interface": {
+    "displayName": "Context Guard",
+    "shortDescription": "The eyes of Emu. Drift Alert, Runway, Analytics, and Report.",
+    "longDescription": "The eyes of Emu. Drift Alert, Runway, Analytics, and Report.",
+    "developerName": "Enchanter Labs",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Use Context Guard on my project"
+    ]
+  },
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json"
+}

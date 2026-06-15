@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "emu-token-saver-scripts": {
+      "cwd": ".",
+      "command": "python",
+      "args": [
+        "./mcp/server.py"
+      ]
+    }
+  }
+}

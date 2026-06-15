@@ -1,0 +1,56 @@
+{
+  "name": "emu",
+  "interface": {
+    "displayName": "Emu"
+  },
+  "plugins": [
+    {
+      "name": "context-guard",
+      "source": {
+        "source": "local",
+        "path": "./plugins/context-guard"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "full",
+      "source": {
+        "source": "local",
+        "path": "./plugins/full"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "state-keeper",
+      "source": {
+        "source": "local",
+        "path": "./plugins/state-keeper"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "token-saver",
+      "source": {
+        "source": "local",
+        "path": "./plugins/token-saver"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

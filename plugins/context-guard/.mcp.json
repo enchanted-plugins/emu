@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "emu-context-guard-scripts": {
+      "cwd": ".",
+      "command": "python",
+      "args": [
+        "./mcp/server.py"
+      ]
+    }
+  }
+}

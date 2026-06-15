@@ -1,0 +1,32 @@
+{
+  "name": "state-keeper",
+  "version": "2.0.0",
+  "description": "Preserves Claude Code context across compactions. Auto-restores after compaction.",
+  "author": {
+    "name": "Enchanter Labs"
+  },
+  "license": "MIT",
+  "keywords": [
+    "compaction",
+    "state",
+    "checkpoint",
+    "context",
+    "restore"
+  ],
+  "interface": {
+    "displayName": "State Keeper",
+    "shortDescription": "Preserves Claude Code context across compactions. Auto-restores after compactio\u2026",
+    "longDescription": "Preserves Claude Code context across compactions. Auto-restores after compaction.",
+    "developerName": "Enchanter Labs",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Use State Keeper on my project"
+    ]
+  },
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json"
+}
