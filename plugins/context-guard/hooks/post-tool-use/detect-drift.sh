@@ -48,8 +48,16 @@ if [[ -z "$TOOL_NAME" ]]; then
   exit 0
 fi
 
-# ── Session hash (spec rule #2) ──
-SESSION_HASH=$(md5sum "${HOOK_TRANSCRIPT_PATH}" 2>/dev/null | cut -c1-8 || echo "fallback-$$")
+# ── Session hash ──
+# Stable per-session key. Do NOT hash the transcript file *contents*: the
+# transcript grows every turn, so `md5sum "$file"` changed on every call and
+# every session-scoped cache was reborn empty (VF-04 — the whole detection
+# layer never functioned). Key off the stable session_id from the payload;
+# fall back to the transcript *path* string, then pid. This overrides the old
+# "spec rule #2" (never use session_id), which was the source of the defect.
+EMU_SESSION_KEY=$(printf "%s" "$HOOK_INPUT" | jq -r '.session_id // empty' 2>/dev/null)
+EMU_SESSION_KEY="${EMU_SESSION_KEY:-${EMU_SESSION_ID:-${HOOK_TRANSCRIPT_PATH:-pid-$$}}}"
+SESSION_HASH=$(printf "%s" "$EMU_SESSION_KEY" | md5sum 2>/dev/null | cut -c1-8 || echo "fallback-$$")
 
 # ── A8 — Skill-Scoped Attribution ──
 # Resolve the currently-active skill scope (or "manual" if none).

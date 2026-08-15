@@ -36,8 +36,14 @@ HOOK_SESSION_ID=$(printf "%s" "$HOOK_INPUT" | jq -r '.session_id // empty' 2>/de
 # Fallback CWD
 HOOK_CWD="${HOOK_CWD:-$(pwd)}"
 
-# ── Session hash (spec rule #2 — never use session_id for cache keys) ──
-SESSION_HASH=$(md5sum "${HOOK_TRANSCRIPT_PATH}" 2>/dev/null | cut -c1-8 || echo "fallback-$$")
+# ── Session hash ──
+# Stable per-session key. The old "spec rule #2" (never use session_id) forced
+# an md5sum of the transcript *contents*, which grows every turn — so the key
+# changed on every call and the checkpoint state was never re-found (VF-04).
+# Override it: key off the stable session_id (already parsed above), falling
+# back to the transcript *path* string, then pid.
+EMU_SESSION_KEY="${HOOK_SESSION_ID:-${EMU_SESSION_ID:-${HOOK_TRANSCRIPT_PATH:-pid-$$}}}"
+SESSION_HASH=$(printf "%s" "$EMU_SESSION_KEY" | md5sum 2>/dev/null | cut -c1-8 || echo "fallback-$$")
 
 # ── State directory ──
 STATE_DIR="${PLUGIN_ROOT}/state"

@@ -46,7 +46,13 @@ if [[ -z "$TOOL_NAME" ]] || [[ -z "$TOOL_RESULT" ]] || [[ "$TOOL_RESULT" == "nul
 fi
 
 # ── Session hash ──
-SESSION_HASH=$(md5sum "${HOOK_TRANSCRIPT_PATH}" 2>/dev/null | cut -c1-8 || echo "fallback-$$")
+# Stable per-session key. Do NOT hash the transcript file *contents*: it grows
+# every turn, so the key changed on every call and the aging counter never
+# accumulated (VF-04). Key off the stable session_id from the payload; fall
+# back to the transcript *path* string, then pid.
+EMU_SESSION_KEY=$(printf "%s" "$HOOK_INPUT" | jq -r '.session_id // empty' 2>/dev/null)
+EMU_SESSION_KEY="${EMU_SESSION_KEY:-${EMU_SESSION_ID:-${HOOK_TRANSCRIPT_PATH:-pid-$$}}}"
+SESSION_HASH=$(printf "%s" "$EMU_SESSION_KEY" | md5sum 2>/dev/null | cut -c1-8 || echo "fallback-$$")
 
 # ── Call counter file ──
 COUNTER_FILE="/tmp/emu-age-${SESSION_HASH}.count"
