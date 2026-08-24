@@ -1,7 +1,7 @@
 {
   "name": "emu-token-saver",
   "description": "Reduces token usage via compression, dedup, delta mode, and output efficiency.",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "author": {
     "name": "Emu"
   },
