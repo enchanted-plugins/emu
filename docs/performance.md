@@ -75,5 +75,4 @@ Until CI numbers land here, **we make no numerical claims.** Anecdotes from our 
 ## Related
 
 - [PRIVACY.md](../PRIVACY.md) — what Emu reads and stores.
-- [docs/science/README.md](science/README.md) — the algorithms that produce these savings, derived.
-- [docs/glossary.md](glossary.md) — defines "runway", "drift", "dedup" in Emu's precise senses.
+- [docs/science/README.md](science/README.md) — the algorithms that produce these savings, derived; defines "runway", "drift", and "dedup" in Emu's precise senses.
