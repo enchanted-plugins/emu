@@ -54,7 +54,7 @@ Token management, drift detection, compaction survival.
 /plugin marketplace add enchanter-ai/emu
 ```
 
-[Repository](https://github.com/enchanter-ai/emu) · v2.0.0 · 4 plugins
+[Repository](https://github.com/enchanter-ai/emu) · v2.0.0 · 4 plugins (3 sub-plugins + 1 meta)
 
 ### Crow — Change Comprehension
 
