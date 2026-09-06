@@ -5,7 +5,7 @@
   },
   "metadata": {
     "description": "Every token accounted for. Context health platform for Claude Code.",
-    "version": "2.0.0"
+    "version": "3.0.1"
   },
   "plugins": [
     {
@@ -17,7 +17,7 @@
     {
       "name": "state-keeper",
       "source": "./plugins/state-keeper",
-      "description": "Preserves Claude Code context across compactions. Writes checkpoint before compaction wipes context. Auto-restores after compaction.",
+      "description": "Preserves Claude Code context across compactions. Writes a checkpoint before compaction wipes context. Restore is available via the restorer agent and state-recovery skill (auto-restore re-scoping pending).",
       "category": "development"
     },
     {

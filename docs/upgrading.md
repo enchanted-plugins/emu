@@ -12,4 +12,4 @@ Each major-to-major transition gets a dedicated section here with:
 
 ## Current version
 
-See [CHANGELOG.md](../CHANGELOG.md) for the current version and recent changes. As of this writing Emu is on v2.0.0; no breaking-change migrations are documented yet. This page is a stub until the next major bump.
+See [CHANGELOG.md](../CHANGELOG.md) for the current version and recent changes. As of this writing Emu is on v3.0.1; no breaking-change migrations are documented yet. This page is a stub until the next major bump.

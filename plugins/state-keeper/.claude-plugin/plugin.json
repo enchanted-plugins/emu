@@ -1,7 +1,7 @@
 {
   "name": "emu-state-keeper",
-  "description": "Preserves Claude Code context across compactions. Auto-restores after compaction.",
-  "version": "2.0.0",
+  "description": "Preserves Claude Code context across compactions. Writes a checkpoint before compaction; restore is available via the restorer agent and state-recovery skill (auto-restore re-scoping pending).",
+  "version": "2.0.1",
   "author": {
     "name": "Emu"
   },
